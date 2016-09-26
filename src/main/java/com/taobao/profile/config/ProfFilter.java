@@ -59,27 +59,48 @@ public class ProfFilter {
     private static void addQualifiedName(String qualifiedName, FilterStrategy strategy) {
         Node curr = root;
         String[] segments = qualifiedName.split("\\.");
-        for (String segment : segments) {
-            Node child = curr.getChildByName(segment);
-            if (child == null) {
-                child = curr.createChildByName(segment);
+        synchronized (root) {
+            for (String segment : segments) {
+                Node child = curr.getChildByName(segment);
+                if (child == null) {
+                    child = curr.createChildByName(segment);
+                }
+                curr = child;
             }
-            curr = child;
         }
 
         curr.setStrategy(strategy);
     }
 
     public static boolean needsTransform(ClassLoader classLoader, String className) {
-        // return whether the class is included or not excluded.
-//        return isIncluded(className) ||
-//               !((classLoader != null && isExcludedClassLoader(
-//                       classLoader.getClass().getName())) || isExcluded(className));
-        // TODO
-        return true;
+        boolean need = false;
+        if (classLoader != null) {
+            Node classLoadNode = getNodeByQualified(classLoader.getClass().getName());
+            need = classLoadNode.strategy == FilterStrategy.INCLUDE;
+        }
+
+        Node classNode = getNodeByQualified(className);
+
+        return need | (classNode.strategy == FilterStrategy.INCLUDE);
+    }
+
+    private static Node getNodeByQualified(String qualified) {
+        String[] segments = qualified.split("\\.");
+        Node curr = root;
+        int index = 0, len = segments.length;
+        while (curr != null) {
+            curr = curr.getChildByName(segments[index]);
+            if (++index == len) {
+                break;
+            }
+        }
+
+        return curr == null ? Node.EMPTY : curr;
     }
 
     private static class Node {
+        static Node EMPTY = new Node("EMPTY", DEFAULT_STRATEGY, null);
+
         private String name;
         private FilterStrategy strategy;
         private Node parent;
@@ -101,7 +122,7 @@ public class ProfFilter {
 
         Node createChildByName(String name) {
             if (childrenList == null) {
-                childrenList = new CopyOnWriteArrayList<>();
+                childrenList = new CopyOnWriteArrayList<Node>();
             }
 
             Node child = new Node(name, this);
