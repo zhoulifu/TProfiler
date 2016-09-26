@@ -7,8 +7,8 @@
  */
 package com.taobao.profile.config;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 包名过滤器,过滤注入或者不注入的Package
@@ -18,101 +18,109 @@ import java.util.Set;
  */
 public class ProfFilter {
 
-    /**
-     * 注入的Package集合
-     */
-    private static Set<String> includePackage = new HashSet<String>();
-    /**
-     * 不注入的Package集合
-     */
-    private static Set<String> excludePackage = new HashSet<String>();
-    /**
-     * 不注入的ClassLoader集合
-     */
-    private static Set<String> excludeClassLoader = new HashSet<String>();
+    private static FilterStrategy DEFAULT_STRATEGY = FilterStrategy.INCLUDE;
+
+    static Node root;
 
     static {
+        root = new Node("", DEFAULT_STRATEGY, null);
+
         // 默认不注入的Package
-        excludePackage.add("java/");// 包含javax
-        excludePackage.add("sun/");// 包含sunw
-        excludePackage.add("com/sun/");
-        excludePackage.add(
-                "org/");// 包含org/xml org/jboss org/apache/xerces org/objectweb/asm
+        addQualifiedName("java", FilterStrategy.EXCLUDE);
+        addQualifiedName("sun", FilterStrategy.EXCLUDE);
+        addQualifiedName("com.sun", FilterStrategy.EXCLUDE);
+        addQualifiedName("org", FilterStrategy.EXCLUDE);
         // 不注入profile本身
-        excludePackage.add("com/taobao/profile");
-        excludePackage.add("com/taobao/hsf");
+        addQualifiedName("com.taobao.profile", FilterStrategy.EXCLUDE);
+        addQualifiedName("com.taobao.hsf", FilterStrategy.EXCLUDE);
     }
 
     /**
-     *
-     * @param className
+     * @param qualifiedName
      */
-    public static void addIncludeClass(String className) {
-        String icaseName = className.toLowerCase().replace('.', '/');
-        includePackage.add(icaseName);
+    public static void addIncludeClass(String qualifiedName) {
+        addQualifiedName(qualifiedName, FilterStrategy.INCLUDE);
     }
 
     /**
-     *
-     * @param className
+     * @param qualifiedName
      */
-    public static void addExcludeClass(String className) {
-        String icaseName = className.toLowerCase().replace('.', '/');
-        excludePackage.add(icaseName);
+    public static void addExcludeClass(String qualifiedName) {
+        addQualifiedName(qualifiedName, FilterStrategy.EXCLUDE);
     }
 
     /**
-     *
-     * @param classLoader
+     * @param qualifiedName
      */
-    public static void addExcludeClassLoader(String classLoader) {
-        excludeClassLoader.add(classLoader);
+    public static void addExcludeClassLoader(String qualifiedName) {
+        addQualifiedName(qualifiedName, FilterStrategy.EXCLUDE);
     }
 
-    /**
-     * 是否是需要注入的类
-     *
-     * @param className
-     * @return
-     */
-    public static boolean isNeedInject(String className) {
-        String icaseName = className.toLowerCase().replace('.', '/');
-        for (String v : includePackage) {
-            if (icaseName.startsWith(v)) {
-                return true;
+    private static void addQualifiedName(String qualifiedName, FilterStrategy strategy) {
+        Node curr = root;
+        String[] segments = qualifiedName.split("\\.");
+        for (String segment : segments) {
+            Node child = curr.getChildByName(segment);
+            if (child == null) {
+                child = curr.createChildByName(segment);
             }
+            curr = child;
         }
-        return false;
+
+        curr.setStrategy(strategy);
     }
 
-    /**
-     * 是否是不需要注入的类
-     *
-     * @param className
-     * @return
-     */
-    public static boolean isNotNeedInject(String className) {
-        String icaseName = className.toLowerCase().replace('.', '/');
-        for (String v : excludePackage) {
-            if (icaseName.startsWith(v)) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean needsTransform(ClassLoader classLoader, String className) {
+        // return whether the class is included or not excluded.
+//        return isIncluded(className) ||
+//               !((classLoader != null && isExcludedClassLoader(
+//                       classLoader.getClass().getName())) || isExcluded(className));
+        // TODO
+        return true;
     }
 
-    /**
-     * 是否是不需要注入的类加载器
-     *
-     * @param classLoader
-     * @return
-     */
-    public static boolean isNotNeedInjectClassLoader(String classLoader) {
-        for (String v : excludeClassLoader) {
-            if (classLoader.equals(v)) {
-                return true;
-            }
+    private static class Node {
+        private String name;
+        private FilterStrategy strategy;
+        private Node parent;
+        private List<Node> childrenList;
+
+        Node(String name, Node parent) {
+            this(name, parent.strategy, parent);
         }
-        return false;
+
+        Node(String name, FilterStrategy strategy, Node parent) {
+            this.name = name;
+            this.strategy = strategy;
+            this.parent = parent;
+        }
+
+        void setStrategy(FilterStrategy strategy) {
+            this.strategy = strategy;
+        }
+
+        Node createChildByName(String name) {
+            if (childrenList == null) {
+                childrenList = new CopyOnWriteArrayList<>();
+            }
+
+            Node child = new Node(name, this);
+            childrenList.add(child);
+            return child;
+        }
+
+        Node getChildByName(String name) {
+            if (childrenList == null) {
+                return null;
+            }
+
+            for (Node node : childrenList) {
+                if (node.name.equals(name)) {
+                    return node;
+                }
+            }
+
+            return null;
+        }
     }
 }
