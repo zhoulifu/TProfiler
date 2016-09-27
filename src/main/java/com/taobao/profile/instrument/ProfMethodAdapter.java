@@ -50,7 +50,7 @@ public class ProfMethodAdapter extends MethodVisitor {
     public void visitCode() {
         this.visitLdcInsn(mMethodId);
         this.visitMethodInsn(INVOKESTATIC, "com/taobao/profile/Profiler", "Start",
-                             "(I)V");
+                             "(I)V", false);
         super.visitCode();
     }
 
@@ -76,7 +76,7 @@ public class ProfMethodAdapter extends MethodVisitor {
             case Opcodes.ATHROW:
                 this.visitLdcInsn(mMethodId);
                 this.visitMethodInsn(INVOKESTATIC, "com/taobao/profile/Profiler", "End",
-                                     "(I)V");
+                                     "(I)V", false);
                 break;
             default:
                 break;
