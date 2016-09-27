@@ -41,7 +41,7 @@ public class Manager {
     /**
      * 远程刷出方法数据
      */
-    public static final String FLUSHMETHOD = "flushmethod";
+    public static final String FLUSH_METHOD = "flushmethod";
     /**
      * 远程连接端口
      */
@@ -57,7 +57,7 @@ public class Manager {
     /**
      * 是否忽略get/set方法
      */
-    private static boolean IGNORE_GETSET_METHOD;
+    private static boolean IGNORE_GET_SET_METHOD;
     /**
      * Manager
      */
@@ -130,7 +130,7 @@ public class Manager {
      * @return the ignoreGetSetMethod
      */
     public static boolean isIgnoreGetSetMethod() {
-        return IGNORE_GETSET_METHOD;
+        return IGNORE_GET_SET_METHOD;
     }
 
     /**
@@ -139,7 +139,7 @@ public class Manager {
     public void initialization() {
         profConfig = new ProfConfig();
         NEED_NANO_TIME = profConfig.isNeedNanoTime();
-        IGNORE_GETSET_METHOD = profConfig.isIgnoreGetSetMethod();
+        IGNORE_GET_SET_METHOD = profConfig.isIgnoreGetSetMethod();
         METHOD_LOG_PATH = profConfig.getMethodFilePath();
         // 判断启动时间是否大于采集结束时间 2012-05-25
         DateFormat df = new SimpleDateFormat("HH:mm:ss");

@@ -63,7 +63,7 @@ public class TProfilerClient {
      * @param port
      */
     public static void flushMethod(String server, int port) {
-        doSend(Manager.FLUSHMETHOD, server, port);
+        doSend(Manager.FLUSH_METHOD, server, port);
     }
 
     /**
@@ -140,7 +140,7 @@ public class TProfilerClient {
      */
     private static String read(InputStream in) throws IOException {
         BufferedInputStream bin = new BufferedInputStream(in);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int i;
         while ((i = bin.read()) != -1) {
             char c = (char) i;
@@ -167,7 +167,7 @@ public class TProfilerClient {
             start(args[0], port);
         } else if (args[2].toLowerCase().equals(Manager.STOP)) {
             stop(args[0], port);
-        } else if (args[2].toLowerCase().equals(Manager.FLUSHMETHOD)) {
+        } else if (args[2].toLowerCase().equals(Manager.FLUSH_METHOD)) {
             flushMethod(args[0], port);
         } else {
             System.out.println(status(args[0], port));

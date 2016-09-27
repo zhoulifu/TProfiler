@@ -20,7 +20,7 @@ import com.taobao.profile.utils.VariableNotFoundException;
 /**
  * <p>用于加载配置文件的properties类，与java默认的不同，在调用get方法返回value时，会对value
  * 会检查是否存在变量(如：${user.home})，如果存在，会将变量替换成具体的值。
- * <p>该类使用dectorator设计模式
+ * <p>该类使用decorator设计模式
  * <p>
  * <p>示例文件内容(profile.properties)：
  * <pre>
@@ -205,7 +205,7 @@ public class ConfigureProperties extends Properties {
     public String getProperty(String key) {
         String value = delegate.getProperty(key);
         try {
-            return Utilities.repleseVariables(value, context);
+            return Utilities.replaceVariables(value, context);
         } catch (VariableNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -214,7 +214,7 @@ public class ConfigureProperties extends Properties {
     public String getProperty(String key, String defaultValue) {
         String value = delegate.getProperty(key, defaultValue);
         try {
-            return Utilities.repleseVariables(value, context);
+            return Utilities.replaceVariables(value, context);
         } catch (VariableNotFoundException e) {
             throw new RuntimeException(e);
         }

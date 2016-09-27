@@ -93,7 +93,7 @@ public class DailyRollingFileWriter {
      *
      */
     public void printLogHeadContent() {
-        subappend(logHeadContent);
+        doAppend(logHeadContent);
     }
 
     /**
@@ -106,7 +106,7 @@ public class DailyRollingFileWriter {
             nextRollingTime = rollingCalendar.getNextRollingMillis(now);
             rolling(now);
         }
-        subappend(log);
+        doAppend(log);
     }
 
     /**
@@ -125,7 +125,7 @@ public class DailyRollingFileWriter {
     /**
      * @param log
      */
-    private void subappend(String log) {
+    private void doAppend(String log) {
         try {
             bufferedWriter.write(log);
         } catch (IOException e) {

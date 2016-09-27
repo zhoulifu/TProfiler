@@ -22,24 +22,11 @@ import com.taobao.profile.runtime.MethodCache;
  * @since 2012-1-12
  */
 public class TimeControlThread extends Thread {
-    /**
-     *
-     */
-    private Object lock = new Object();
 
-    /**
-     *
-     */
+    private Object lock = new Object();
     private InnerControlTime startTime;
-    /**
-     *
-     */
     private InnerControlTime endTime;
 
-    /**
-     * @param start
-     * @param end
-     */
     public TimeControlThread(ProfConfig config) {
         startTime = parse(config.getStartProfTime());
         endTime = parse(config.getEndProfTime());
@@ -55,8 +42,7 @@ public class TimeControlThread extends Thread {
         cal.set(Calendar.MINUTE, time.getMinute());
         cal.set(Calendar.SECOND, time.getSecond());
         long startupTime = cal.getTimeInMillis();
-        long _waitTime = startupTime - System.currentTimeMillis();
-        return _waitTime;
+        return startupTime - System.currentTimeMillis();
     }
 
     /**
@@ -70,8 +56,7 @@ public class TimeControlThread extends Thread {
         cal.set(Calendar.MINUTE, time.getMinute());
         cal.set(Calendar.SECOND, time.getSecond());
         long startupTime = cal.getTimeInMillis();
-        long _waitTime = startupTime - System.currentTimeMillis();
-        return _waitTime;
+        return startupTime - System.currentTimeMillis();
     }
 
     /**

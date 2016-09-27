@@ -61,7 +61,7 @@ public class InnerSocketThread extends Thread {
                     Manager.instance().setSwitchFlag(true);
                 } else if (Manager.STATUS.equals(command)) {
                     write(child.getOutputStream());
-                } else if (Manager.FLUSHMETHOD.equals(command)) {
+                } else if (Manager.FLUSH_METHOD.equals(command)) {
                     MethodCache.flushMethodData();
                 } else {
                     Manager.instance().setSwitchFlag(false);
@@ -92,7 +92,7 @@ public class InnerSocketThread extends Thread {
      */
     private String read(InputStream in) throws IOException {
         BufferedInputStream bin = new BufferedInputStream(in);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int i;
         while ((i = bin.read()) != -1) {
             char c = (char) i;

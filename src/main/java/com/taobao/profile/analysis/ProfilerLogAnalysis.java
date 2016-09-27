@@ -33,7 +33,7 @@ public class ProfilerLogAnalysis {
     private String logPath;
     private String methodPath;
     private boolean nano = false;
-    private long currentthreadId = -1;
+    private long currentThreadId = -1;
     private List<MethodStack> threadList = new ArrayList<MethodStack>();
     private Map<Long, TimeSortData> cacheMethodMap = new HashMap<Long, TimeSortData>();
     private Map<Long, String> methodIdMap = new HashMap<Long, String>();
@@ -107,7 +107,7 @@ public class ProfilerLogAnalysis {
                     continue;
                 }
                 if ("=".equals(line)) {
-                    currentthreadId = -1;
+                    currentThreadId = -1;
                     doMerge();
                 }
                 String[] data = line.split("\t");
@@ -137,14 +137,14 @@ public class ProfilerLogAnalysis {
     /**
      * 合并数据
      *
-     * @param threadid
+     * @param threadId
      * @param stackNum
      * @param methodId
      * @param useTime
      */
-    private void merge(long threadid, long stackNum, long methodId, long useTime) {
-        if (currentthreadId != threadid) {
-            currentthreadId = threadid;
+    private void merge(long threadId, long stackNum, long methodId, long useTime) {
+        if (currentThreadId != threadId) {
+            currentThreadId = threadId;
             doMerge();
         }
         MethodStack m = new MethodStack();
@@ -160,13 +160,13 @@ public class ProfilerLogAnalysis {
     private void doMerge() {
         for (int i = 0; i < threadList.size(); i++) {
             MethodStack m = threadList.get(i);
-            long statck = m.stackNum;
+            long stackNum = m.stackNum;
             for (int j = i + 1; j < threadList.size(); j++) {
                 MethodStack tmp = threadList.get(j);
                 long tmpStack = tmp.stackNum;
-                if (statck + 1 == tmpStack) {
+                if (stackNum + 1 == tmpStack) {
                     m.useTime -= tmp.useTime;
-                } else if (statck >= tmpStack) {
+                } else if (stackNum >= tmpStack) {
                     break;
                 }
             }

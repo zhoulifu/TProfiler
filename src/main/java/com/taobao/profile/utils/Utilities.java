@@ -29,7 +29,7 @@ public class Utilities {
      * @throws VariableNotFoundException
      * @author manlge
      */
-    public static String repleseVariables(String source,
+    public static String replaceVariables(String source,
             Map<Object, Object> context) throws VariableNotFoundException {
         if (source == null) {
             throw new IllegalArgumentException("source can't be null");

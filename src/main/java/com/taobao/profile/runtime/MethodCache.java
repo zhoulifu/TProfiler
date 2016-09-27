@@ -51,10 +51,10 @@ public class MethodCache {
      * 更新行号
      *
      * @param id
-     * @param linenum
+     * @param lineNum
      */
-    public synchronized static void UpdateLineNum(int id, int linenum) {
-        mCacheMethods.get(id).setMLineNum(linenum);
+    public synchronized static void UpdateLineNum(int id, int lineNum) {
+        mCacheMethods.get(id).setMLineNum(lineNum);
     }
 
     /**

@@ -9,9 +9,9 @@ import com.taobao.profile.utils.VariableNotFoundException;
 public class UtilitiesTest {
 
     @Test
-    public void testRepleseVariables() throws VariableNotFoundException {
+    public void testReplaceVariables() throws VariableNotFoundException {
         String source = "${user.home}/logs/${user.language}/tprofiler.log";
-        String str1 = Utilities.repleseVariables(source, System.getProperties());
+        String str1 = Utilities.replaceVariables(source, System.getProperties());
         String str2 = System.getProperty("user.home") + "/logs/" + System.getProperty(
                 "user.language") + "/tprofiler.log";
         Assert.assertEquals(str1, str2);
