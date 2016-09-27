@@ -25,13 +25,13 @@ public class ProfFilter {
     static {
         root = new Node("", DEFAULT_STRATEGY, null);
 
-        // Default settings
-        addQualifiedName("java", FilterStrategy.EXCLUDE);
-        addQualifiedName("sun", FilterStrategy.EXCLUDE);
-        addQualifiedName("com.sun", FilterStrategy.EXCLUDE);
-        addQualifiedName("org", FilterStrategy.EXCLUDE);
+        // Default exclusion
+        addExcludeClass("java");
+        addExcludeClass("sun");
+        addExcludeClass("com.sun");
+        addExcludeClass("org");
         // Self-exclude
-        addQualifiedName("com.taobao.profile", FilterStrategy.EXCLUDE);
+        addExcludeClass("com.taobao.profile");
     }
 
     public static void addIncludeClass(String qualifiedName) {
