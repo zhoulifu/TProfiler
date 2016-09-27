@@ -21,7 +21,7 @@ import com.taobao.profile.utils.DailyRollingFileWriter;
  * @author shutong.dy
  * @since 2012-1-7
  */
-public class SamplerThread extends Thread {
+public class SamplerThread implements Runnable {
 
     /**
      * log writer

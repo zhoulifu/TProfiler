@@ -21,7 +21,7 @@ import com.taobao.profile.runtime.MethodCache;
  * @author shutong.dy
  * @since 2012-1-12
  */
-public class TimeControlThread extends Thread {
+public class TimeControlThread implements Runnable {
 
     private Object lock = new Object();
     private InnerControlTime startTime;

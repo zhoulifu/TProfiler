@@ -25,7 +25,7 @@ import com.taobao.profile.runtime.MethodCache;
  * @author shutong.dy
  * @since 2012-1-11
  */
-public class InnerSocketThread extends Thread {
+public class InnerSocketThread implements Runnable {
     /**
      * server
      */
@@ -38,8 +38,8 @@ public class InnerSocketThread extends Thread {
      */
     public static void main(String[] args) {
         InnerSocketThread socketThread = new InnerSocketThread();
-        socketThread.setName("TProfiler-InnerSocket-Debug");
-        socketThread.start();
+        Thread thread = new Thread(socketThread, "TProfiler-InnerSocket-Debug");
+        thread.start();
     }
 
     /*

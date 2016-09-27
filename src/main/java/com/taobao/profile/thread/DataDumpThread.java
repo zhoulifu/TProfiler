@@ -22,7 +22,7 @@ import com.taobao.profile.utils.DailyRollingFileWriter;
  * @author shutong.dy
  * @since 2012-1-11
  */
-public class DataDumpThread extends Thread {
+public class DataDumpThread implements Runnable {
     /**
      * log writer
      */

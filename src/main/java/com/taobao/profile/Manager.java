@@ -10,6 +10,7 @@ package com.taobao.profile;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ThreadFactory;
 
 import com.taobao.profile.config.ProfConfig;
 import com.taobao.profile.config.ProfFilter;
@@ -251,25 +252,20 @@ public class Manager {
      *
      */
     public void startupThread() {
-        controlThread = new TimeControlThread(profConfig);
-        controlThread.setName("TProfiler-TimeControl");
-        controlThread.setDaemon(true);
-
-        socketThread = new InnerSocketThread();
-        socketThread.setName("TProfiler-InnerSocket");
-        socketThread.setDaemon(true);
-
-        dumpThread = new DataDumpThread(profConfig);
-        dumpThread.setName("TProfiler-DataDump");
-        dumpThread.setDaemon(true);
-
-        samplerThread = new SamplerThread(profConfig);
-        samplerThread.setName("TProfiler-Sampler");
-        samplerThread.setDaemon(true);
-
-        controlThread.start();
-        socketThread.start();
-        dumpThread.start();
-        samplerThread.start();
+        factory.newThread(new TimeControlThread(profConfig)).start();
+        factory.newThread(new InnerSocketThread()).start();
+        factory.newThread(new DataDumpThread(profConfig)).start();
+        factory.newThread(new SamplerThread(profConfig)).start();
     }
+
+    private ThreadFactory factory = new ThreadFactory() {
+        private final String group = "TProfiler";
+        @Override
+        public Thread newThread(Runnable r) {
+            String threadName = r.getClass().getSimpleName();
+            Thread thread = new Thread(r, group + "-" + threadName);
+            thread.setDaemon(true);
+            return thread;
+        }
+    };
 }
