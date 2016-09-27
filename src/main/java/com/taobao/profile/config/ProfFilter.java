@@ -14,44 +14,35 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 包名过滤器,过滤注入或者不注入的Package
  *
  * @author luqi
+ * @author zlf
  * @since 2010-6-23
  */
 public class ProfFilter {
 
-    private static FilterStrategy DEFAULT_STRATEGY = FilterStrategy.INCLUDE;
+    public static FilterStrategy DEFAULT_STRATEGY = FilterStrategy.INCLUDE;
 
     static Node root;
 
     static {
         root = new Node("", DEFAULT_STRATEGY, null);
 
-        // 默认不注入的Package
+        // Default settings
         addQualifiedName("java", FilterStrategy.EXCLUDE);
         addQualifiedName("sun", FilterStrategy.EXCLUDE);
         addQualifiedName("com.sun", FilterStrategy.EXCLUDE);
         addQualifiedName("org", FilterStrategy.EXCLUDE);
-        // 不注入profile本身
+        // Self-exclude
         addQualifiedName("com.taobao.profile", FilterStrategy.EXCLUDE);
-        addQualifiedName("com.taobao.hsf", FilterStrategy.EXCLUDE);
     }
 
-    /**
-     * @param qualifiedName
-     */
     public static void addIncludeClass(String qualifiedName) {
         addQualifiedName(qualifiedName, FilterStrategy.INCLUDE);
     }
 
-    /**
-     * @param qualifiedName
-     */
     public static void addExcludeClass(String qualifiedName) {
         addQualifiedName(qualifiedName, FilterStrategy.EXCLUDE);
     }
 
-    /**
-     * @param qualifiedName
-     */
     public static void addExcludeClassLoader(String qualifiedName) {
         addQualifiedName(qualifiedName, FilterStrategy.EXCLUDE);
     }
