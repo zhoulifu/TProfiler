@@ -1,4 +1,4 @@
-package com.taobao.profile.test;
+package com.taobao.profile.config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,8 +6,6 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.taobao.profile.config.ConfigureProperties;
 
 public class ConfigurePropertiesTest {
 

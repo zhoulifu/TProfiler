@@ -1,10 +1,7 @@
-package com.taobao.profile.test;
+package com.taobao.profile.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.taobao.profile.utils.Utilities;
-import com.taobao.profile.utils.VariableNotFoundException;
 
 public class UtilitiesTest {
 
