@@ -18,8 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @since 2010-6-23
  */
 public class ProfFilter {
-
-    public static FilterStrategy DEFAULT_STRATEGY = FilterStrategy.INCLUDE;
+    public static FilterStrategy DEFAULT_STRATEGY = FilterStrategy.UNDEFINED;
 
     static Node root;
 
@@ -77,21 +76,24 @@ public class ProfFilter {
 
     private static Node getNodeByQualified(String qualified) {
         String[] segments = qualified.split("\\.");
-        Node curr = root;
+        Node curr = root, pre = root;
         int index = 0, len = segments.length;
         while (curr != null) {
+            pre = curr;
             curr = curr.getChildByName(segments[index]);
             if (++index == len) {
                 break;
             }
         }
 
-        return curr == null ? Node.EMPTY : curr;
+        return curr == null ? pre : curr;
+    }
+
+    static void reset() {
+        root.recursiveReset();
     }
 
     private static class Node {
-        static Node EMPTY = new Node("EMPTY", DEFAULT_STRATEGY, null);
-
         private String name;
         private FilterStrategy strategy;
         private Node parent;
@@ -133,6 +135,21 @@ public class ProfFilter {
             }
 
             return null;
+        }
+
+        void recursiveReset() {
+            filterStrategyReset();
+            if (childrenList == null) {
+                return;
+            }
+
+            for (Node node : childrenList) {
+                node.recursiveReset();
+            }
+        }
+
+        private void filterStrategyReset() {
+            strategy = (parent == null) ? DEFAULT_STRATEGY : parent.strategy;
         }
     }
 }
