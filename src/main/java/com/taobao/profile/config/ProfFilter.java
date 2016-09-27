@@ -75,7 +75,14 @@ public class ProfFilter {
     }
 
     private static Node getNodeByQualified(String qualified) {
-        String[] segments = qualified.split("\\.");
+        String separator;
+        if (qualified.indexOf("/") > 0) {
+            separator = "/";
+        } else {
+            separator = "\\.";
+        }
+
+        String[] segments = qualified.split(separator);
         Node curr = root, pre = root;
         int index = 0, len = segments.length;
         while (curr != null) {
