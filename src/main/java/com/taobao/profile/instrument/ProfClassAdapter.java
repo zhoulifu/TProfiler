@@ -10,10 +10,10 @@ package com.taobao.profile.instrument;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import com.taobao.profile.Manager;
 
@@ -23,7 +23,7 @@ import com.taobao.profile.Manager;
  * @author luqi
  * @since 2010-6-23
  */
-public class ProfClassAdapter extends ClassAdapter {
+public class ProfClassAdapter extends ClassVisitor {
     /**
      * 类名
      */
@@ -43,7 +43,7 @@ public class ProfClassAdapter extends ClassAdapter {
      * @param className
      */
     public ProfClassAdapter(ClassVisitor visitor, String className) {
-        super(visitor);
+        super(Opcodes.ASM5, visitor);
         this.className = className;
     }
 
@@ -72,7 +72,6 @@ public class ProfClassAdapter extends ClassAdapter {
             String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(arg, name, descriptor, signature,
                                              exceptions);
-
         // Ignore getter/setter and the static initialization methods
         if ((Manager.isIgnoreGetSetMethod() && pojoMethodNames.contains(name))
             || ("<clinit>".equals(name))) {

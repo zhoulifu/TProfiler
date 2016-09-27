@@ -7,10 +7,10 @@
  */
 package com.taobao.profile.instrument;
 
+import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -23,7 +23,7 @@ import com.taobao.profile.runtime.MethodCache;
  * @author luqi
  * @since 2010-6-23
  */
-public class ProfMethodAdapter extends MethodAdapter {
+public class ProfMethodAdapter extends MethodVisitor {
     /**
      * 方法ID
      */
@@ -37,7 +37,7 @@ public class ProfMethodAdapter extends MethodAdapter {
      */
     public ProfMethodAdapter(MethodVisitor visitor, String fileName, String className,
             String methodName) {
-        super(visitor);
+        super(ASM5, visitor);
         mMethodId = MethodCache.Request();
         MethodCache.UpdateMethodName(mMethodId, fileName, className, methodName);
         // 记录方法数
