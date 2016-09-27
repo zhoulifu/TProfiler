@@ -10,7 +10,6 @@ package com.taobao.profile.analysis;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -53,6 +52,7 @@ public class SamplerLogAnalysis {
                             "<samplerthreadresult.log path>");
             return;
         }
+
         SamplerLogAnalysis analysis = new SamplerLogAnalysis(args[0]);
         analysis.reader();
         analysis.printMethodResult(args[1]);
@@ -67,29 +67,16 @@ public class SamplerLogAnalysis {
         try {
             reader = new BufferedReader(
                     new InputStreamReader(new FileInputStream(logPath)));
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("Thread\t")) {
                     String key = line.substring(0, line.lastIndexOf('\t'));
-                    Integer tmpCount = originalThreadMap.get(key);
-                    if (tmpCount == null) {
-                        originalThreadMap.put(key, 1);
-                    } else {
-                        originalThreadMap.put(key, tmpCount.intValue() + 1);
-                    }
-                } else {
-                    if (line.startsWith("com") || line.startsWith("org")) {
-                        Integer tmpCount = originalMethodMap.get(line);
-                        if (tmpCount == null) {
-                            originalMethodMap.put(line, 1);
-                        } else {
-                            originalMethodMap.put(line, tmpCount.intValue() + 1);
-                        }
-                    }
+                    countUp(originalThreadMap, key);
+                } else if (line.startsWith("com") || line.startsWith("org")) {
+                    //TODO where's the condition comes from? what about other stuff like 'io.netty'?
+                    countUp(originalMethodMap, line);
                 }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -100,6 +87,15 @@ public class SamplerLogAnalysis {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private void countUp(Map<String, Integer> map, String key) {
+        Integer tmpCount = map.get(key);
+        if (tmpCount == null) {
+            map.put(key, 1);
+        } else {
+            map.put(key, tmpCount + 1);
         }
     }
 

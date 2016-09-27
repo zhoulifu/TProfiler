@@ -9,7 +9,6 @@ package com.taobao.profile.analysis;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -57,6 +56,7 @@ public class ProfilerLogAnalysis {
                     "path> <topobject.log path>");
             return;
         }
+
         ProfilerLogAnalysis analysis = new ProfilerLogAnalysis(args[0], args[1]);
         analysis.reader();
         analysis.printResult(args[2], args[3]);
@@ -81,7 +81,7 @@ public class ProfilerLogAnalysis {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(methodPath));
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("instrument")) {
                     continue;
@@ -95,31 +95,27 @@ public class ProfilerLogAnalysis {
             reader.close();
 
             reader = new BufferedReader(new FileReader(logPath));
-            line = null;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("##")) {
                     line = line.substring(line.indexOf(":") + 1, line.length());
-                    if (line.equals("true")) {
-                        nano = true;
-                    } else {
-                        nano = false;
-                    }
+                    nano = line.equals("true");
                     continue;
                 }
+
                 if ("=".equals(line)) {
                     currentThreadId = -1;
                     doMerge();
                 }
+
                 String[] data = line.split("\t");
                 if (data.length != 4) {
                     continue;
                 }
+
                 merge(Long.parseLong(data[0]), Long.parseLong(data[1]),
                       Long.parseLong(data[2]),
                       Long.parseLong(data[3]));
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
