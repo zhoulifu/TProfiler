@@ -49,4 +49,14 @@ public class ProFilterTest {
         // non-configured depends on their parent package's configuration
         Assert.assertTrue(ProfFilter.needsTransform(null, "foo.quz"));
     }
+
+    @Test
+    public void testSeparator(){
+        ClassLoader loader = this.getClass().getClassLoader();
+        ProfFilter.addIncludeClass(loader.getClass().getName());
+        ProfFilter.addIncludeClass("foo.bar");
+
+        Assert.assertTrue(ProfFilter.needsTransform(loader, "bar"));
+        Assert.assertTrue(ProfFilter.needsTransform(null, "foo/bar"));
+    }
 }
