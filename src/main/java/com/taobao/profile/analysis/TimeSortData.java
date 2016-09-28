@@ -57,18 +57,7 @@ public class TimeSortData implements Comparable<TimeSortData> {
         return sum;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     public int compareTo(TimeSortData o) {
-        if (this.sum > o.sum) {
-            return -1;
-        } else if (this.sum < o.sum) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return Long.compare(o.sum, this.sum);
     }
 }

@@ -29,10 +29,10 @@ public class SamplerLogAnalysis {
 
     private String logPath;
     private Map<String, Integer> originalMethodMap = new HashMap<String, Integer>();
-    private List<CompareObject> methodList = new ArrayList<CompareObject>();
+    private List<MethodCount> methodList = new ArrayList<MethodCount>();
 
     private Map<String, Integer> originalThreadMap = new HashMap<String, Integer>();
-    private List<CompareObject> threadList = new ArrayList<CompareObject>();
+    private List<ThreadCount> threadList = new ArrayList<ThreadCount>();
 
     /**
      * @param inPath
@@ -72,8 +72,7 @@ public class SamplerLogAnalysis {
                 if (line.startsWith("Thread\t")) {
                     String key = line.substring(0, line.lastIndexOf('\t'));
                     countUp(originalThreadMap, key);
-                } else if (line.startsWith("com") || line.startsWith("org")) {
-                    //TODO where's the condition comes from? what about other stuff like 'io.netty'?
+                } else {
                     countUp(originalMethodMap, line);
                 }
             }
@@ -100,66 +99,29 @@ public class SamplerLogAnalysis {
     }
 
     /**
-     * 取出结果,供分析程序调用
-     *
-     * @return
-     */
-    public List<CompareObject> getMethodResult() {
-        for (Map.Entry<String, Integer> entry : originalMethodMap.entrySet()) {
-            CompareObject obj = new CompareObject();
-            obj.setMethodName(entry.getKey());
-            obj.setCount(entry.getValue());
-            methodList.add(obj);
-        }
-        Collections.sort(methodList);
-        return methodList;
-    }
-
-    /**
-     * 取出结果,供分析程序调用
-     *
-     * @return
-     */
-    public List<CompareObject> getThreadResult() {
-        for (Map.Entry<String, Integer> entry : originalThreadMap.entrySet()) {
-            CompareObject obj = new CompareObject();
-            String[] tmp = entry.getKey().split("\t");
-            obj.setThreadId(tmp[1]);
-            obj.setThreadName(tmp[2]);
-            obj.setThreadState(tmp[3]);
-            obj.setCount(entry.getValue());
-            threadList.add(obj);
-        }
-        Collections.sort(threadList);
-        return threadList;
-    }
-
-    /**
      * 输出分析结果
      *
      * @param outPath
      */
     public void printMethodResult(String outPath) {
         for (Map.Entry<String, Integer> entry : originalMethodMap.entrySet()) {
-            CompareObject obj = new CompareObject();
-            obj.setMethodName(entry.getKey());
-            obj.setCount(entry.getValue());
-            methodList.add(obj);
+            methodList.add(new MethodCount(entry.getValue(), entry.getKey()));
         }
+
         Collections.sort(methodList);
 
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(outPath));
             int count = 0;
-            for (CompareObject entry : methodList) {
-                writer.write(entry.getMethodName());
+            for (MethodCount m : methodList) {
+                writer.write(m.getMethodName());
                 writer.write("\t");
-                writer.write(String.valueOf(entry.getCount()));
+                writer.write(String.valueOf(m.getCount()));
                 writer.write("\n");
 
                 count++;
-                if ((count % 30) == 0) {
+                if ((count & 31) == 0) {
                     writer.flush();
                 }
             }
@@ -184,32 +146,28 @@ public class SamplerLogAnalysis {
      */
     public void printThreadResult(String outPath) {
         for (Map.Entry<String, Integer> entry : originalThreadMap.entrySet()) {
-            CompareObject obj = new CompareObject();
             String[] tmp = entry.getKey().split("\t");
-            obj.setThreadId(tmp[1]);
-            obj.setThreadName(tmp[2]);
-            obj.setThreadState(tmp[3]);
-            obj.setCount(entry.getValue());
-            threadList.add(obj);
+            threadList.add(new ThreadCount(entry.getValue(), tmp[1], tmp[2], tmp[3]));
         }
+
         Collections.sort(threadList);
 
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(outPath));
             int count = 0;
-            for (CompareObject entry : threadList) {
-                writer.write(entry.getThreadId());
+            for (ThreadCount t : threadList) {
+                writer.write(String.valueOf(t.getThreadId()));
                 writer.write("\t");
-                writer.write(entry.getThreadName());
+                writer.write(t.getThreadName());
                 writer.write("\t");
-                writer.write(entry.getThreadState());
+                writer.write(t.getThreadState());
                 writer.write("\t");
-                writer.write(String.valueOf(entry.getCount()));
+                writer.write(String.valueOf(t.getCount()));
                 writer.write("\n");
 
                 count++;
-                if ((count % 30) == 0) {
+                if ((count & 31) == 0) {
                     writer.flush();
                 }
             }
