@@ -59,11 +59,7 @@ public class Profiler {
                 threadProfile[(int) threadId] = thrData;
             }
 
-            long[] frameData = new long[3];
-            frameData[0] = methodId;
-            frameData[1] = thrData.stackNum;
-            frameData[2] = startTime;
-            thrData.stackFrame.push(frameData);
+            thrData.stackFrame.push(new MethodFrame(methodId, startTime, thrData.stackNum));
             thrData.stackNum++;
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,19 +100,19 @@ public class Profiler {
                 return;
             }
             thrData.stackNum--;
-            long[] frameData = thrData.stackFrame.pop();
-            long id = frameData[0];
+            MethodFrame frameData = thrData.stackFrame.pop();
+            long id = frameData.methodId();
             if (methodId != id) {
                 return;
             }
-            long useTime = endTime - frameData[2];
+            long elapsed = endTime - frameData.useTime();
             if (Manager.isNeedNanoTime()) {
-                if (useTime > 500000) {
-                    frameData[2] = useTime;
+                if (elapsed > 500000) {
+                    frameData.useTime(elapsed);
                     thrData.profileData.push(frameData);
                 }
-            } else if (useTime > 1) {
-                frameData[2] = useTime;
+            } else if (elapsed > 1) {
+                frameData.useTime(elapsed);
                 thrData.profileData.push(frameData);
             }
         } catch (Exception e) {
