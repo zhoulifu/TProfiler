@@ -46,12 +46,7 @@ public class Profiler {
             return;
         }
 
-        long startTime;
-        if (Manager.isNeedNanoTime()) {
-            startTime = System.nanoTime();
-        } else {
-            startTime = System.currentTimeMillis();
-        }
+        long startTime = currentTime();
         try {
             ThreadData thrData = threadProfile[(int) threadId];
             if (thrData == null) {
@@ -59,7 +54,8 @@ public class Profiler {
                 threadProfile[(int) threadId] = thrData;
             }
 
-            thrData.stackFrame.push(new MethodFrame(methodId, startTime, thrData.stackNum));
+            thrData.stackFrame.push(
+                    new MethodFrame(methodId, startTime, thrData.stackNum));
             thrData.stackNum++;
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,12 +76,7 @@ public class Profiler {
             return;
         }
 
-        long endTime;
-        if (Manager.isNeedNanoTime()) {
-            endTime = System.nanoTime();
-        } else {
-            endTime = System.currentTimeMillis();
-        }
+        long endTime = currentTime();
         try {
             ThreadData thrData = threadProfile[(int) threadId];
             if (thrData == null || thrData.stackNum <= 0 ||
@@ -93,31 +84,39 @@ public class Profiler {
                 // 没有执行start,直接执行end/可能是异步停止导致的
                 return;
             }
-            // 栈太深则抛弃部分数据
-            if (thrData.profileData.size() > 20000) {
-                thrData.stackNum--;
-                thrData.stackFrame.pop();
-                return;
-            }
+
             thrData.stackNum--;
             MethodFrame frameData = thrData.stackFrame.pop();
-            long id = frameData.methodId();
-            if (methodId != id) {
+
+            // 栈太深则抛弃部分数据
+            if ((thrData.profileData.size() >= 20000) ||
+                (methodId != frameData.methodId())) {
                 return;
             }
+
             long elapsed = endTime - frameData.useTime();
-            if (Manager.isNeedNanoTime()) {
-                if (elapsed > 500000) {
-                    frameData.useTime(elapsed);
-                    thrData.profileData.push(frameData);
-                }
-            } else if (elapsed > 1) {
+            if (elapsedTimeAtLeastOneMillisecond(elapsed)) {
                 frameData.useTime(elapsed);
                 thrData.profileData.push(frameData);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static long currentTime() {
+        return Manager.isNeedNanoTime() ? System.nanoTime() : System.currentTimeMillis();
+    }
+
+    /**
+     * Tell whether the elapsed time is at least one millisecond.(more exactly, time
+     * more than half millisecond)
+     *
+     * @param elapsed
+     * @return
+     */
+    private static boolean elapsedTimeAtLeastOneMillisecond(long elapsed) {
+        return Manager.isNeedNanoTime() ? (elapsed > 500000) : (elapsed >= 1);
     }
 
     public static void clearData() {
