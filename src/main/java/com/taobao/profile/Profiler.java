@@ -18,7 +18,8 @@ import com.taobao.profile.runtime.ThreadData;
  * @since 2010-6-23
  */
 public class Profiler {
-    private final static int size = 65535;
+    private final static int DROP_THRESHOLD = 20000;
+    private final static int SIZE = 65535;
     /**
      * 注入类数
      */
@@ -30,7 +31,7 @@ public class Profiler {
     /**
      * 线程数组
      */
-    public static ThreadData[] threadProfile = new ThreadData[size];
+    public static ThreadData[] threadProfile = new ThreadData[SIZE];
 
     /**
      * 方法开始时调用,采集开始时间
@@ -42,7 +43,7 @@ public class Profiler {
             return;
         }
         long threadId = Thread.currentThread().getId();
-        if (threadId >= size) {
+        if (threadId >= SIZE) {
             return;
         }
 
@@ -72,7 +73,7 @@ public class Profiler {
             return;
         }
         long threadId = Thread.currentThread().getId();
-        if (threadId >= size) {
+        if (threadId >= SIZE) {
             return;
         }
 
@@ -88,8 +89,10 @@ public class Profiler {
             thrData.stackNum--;
             MethodFrame frameData = thrData.stackFrame.pop();
 
-            // 栈太深则抛弃部分数据
-            if ((thrData.profileData.size() >= 20000) ||
+            // Drop frames if stack depth exceeds the threshold. Actually it will drop
+            // frames at the bottom of 'stackFrame'(basically equal to method call
+            // stack) because of doing this check using 'profileData'.
+            if ((thrData.profileData.size() > DROP_THRESHOLD) ||
                 (methodId != frameData.methodId())) {
                 return;
             }
