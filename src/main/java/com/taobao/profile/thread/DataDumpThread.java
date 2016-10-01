@@ -10,6 +10,7 @@ package com.taobao.profile.thread;
 import java.util.concurrent.TimeUnit;
 
 import com.taobao.profile.Manager;
+import com.taobao.profile.MethodFrame;
 import com.taobao.profile.Profiler;
 import com.taobao.profile.config.ProfConfig;
 import com.taobao.profile.runtime.ProfStack;
@@ -96,21 +97,21 @@ public class DataDumpThread implements Runnable {
             if (profilerData == null) {
                 continue;
             }
-            ProfStack<long[]> profile = profilerData.profileData;
+            ProfStack<MethodFrame> profile = profilerData.profileData;
             while (profile.size() > 0) {
-                long[] data = profile.pop();
+                MethodFrame frame = profile.pop();
                 StringBuilder sb = new StringBuilder();
                 // thread id
                 sb.append(index);
                 sb.append('\t');
-                // stack number
-                sb.append(data[1]);
+                // stack depth
+                sb.append(frame.depth());
                 sb.append('\t');
                 // method id
-                sb.append(data[0]);
+                sb.append(frame.methodId());
                 sb.append('\t');
                 // use time
-                sb.append(data[2]);
+                sb.append(frame.useTime());
                 sb.append('\n');
                 fileWriter.append(sb.toString());
             }

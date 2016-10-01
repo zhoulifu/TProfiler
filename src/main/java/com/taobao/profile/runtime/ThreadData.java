@@ -7,6 +7,8 @@
  */
 package com.taobao.profile.runtime;
 
+import com.taobao.profile.MethodFrame;
+
 /**
  * 此类用来记录线程性能分析数据
  *
@@ -17,11 +19,11 @@ public class ThreadData {
     /**
      * 性能分析数据
      */
-    public ProfStack<long[]> profileData = new ProfStack<long[]>();
+    public ProfStack<MethodFrame> profileData = new ProfStack<MethodFrame>();
     /**
      * 栈帧
      */
-    public ProfStack<long[]> stackFrame = new ProfStack<long[]>();
+    public ProfStack<MethodFrame> stackFrame = new ProfStack<MethodFrame>();
     /**
      * 当前栈深度
      */

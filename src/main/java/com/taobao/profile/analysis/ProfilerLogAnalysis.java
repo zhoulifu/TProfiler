@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import com.taobao.profile.MethodFrame;
 import com.taobao.profile.utils.MathUtils;
 
 /**
@@ -33,7 +34,7 @@ public class ProfilerLogAnalysis {
     private String methodPath;
     private boolean nano = false;
     private long currentThreadId = -1;
-    private List<MethodStack> threadList = new ArrayList<MethodStack>();
+    private List<MethodFrame> threadList = new ArrayList<MethodFrame>();
     private Map<Long, TimeSortData> cacheMethodMap = new HashMap<Long, TimeSortData>();
     private Map<Long, String> methodIdMap = new HashMap<Long, String>();
 
@@ -134,20 +135,17 @@ public class ProfilerLogAnalysis {
      * 合并数据
      *
      * @param threadId
-     * @param stackNum
+     * @param stackDepth
      * @param methodId
      * @param useTime
      */
-    private void merge(long threadId, long stackNum, long methodId, long useTime) {
+    private void merge(long threadId, long stackDepth, long methodId, long useTime) {
         if (currentThreadId != threadId) {
             currentThreadId = threadId;
             doMerge();
         }
-        MethodStack m = new MethodStack();
-        m.methodId = methodId;
-        m.useTime = useTime;
-        m.stackNum = stackNum;
-        threadList.add(m);
+
+        threadList.add(new MethodFrame(methodId, useTime, stackDepth));
     }
 
     /**
@@ -155,31 +153,31 @@ public class ProfilerLogAnalysis {
      */
     private void doMerge() {
         for (int i = 0; i < threadList.size(); i++) {
-            MethodStack m = threadList.get(i);
-            long stackNum = m.stackNum;
+            MethodFrame m = threadList.get(i);
+            long stackNum = m.depth();
             for (int j = i + 1; j < threadList.size(); j++) {
-                MethodStack tmp = threadList.get(j);
-                long tmpStack = tmp.stackNum;
+                MethodFrame tmp = threadList.get(j);
+                long tmpStack = tmp.depth();
                 if (stackNum + 1 == tmpStack) {
-                    m.useTime -= tmp.useTime;
+                    m.useTime(m.useTime() - tmp.useTime());
                 } else if (stackNum >= tmpStack) {
                     break;
                 }
             }
         }
         for (int i = 0; i < threadList.size(); i++) {
-            MethodStack m = threadList.get(i);
-            if (m.useTime < 0) {
+            MethodFrame m = threadList.get(i);
+            if (m.useTime() < 0) {
                 break;
             }
-            TimeSortData sortData = cacheMethodMap.get(m.methodId);
+            TimeSortData sortData = cacheMethodMap.get(m.methodId());
             if (sortData == null) {
                 sortData = new TimeSortData();
-                sortData.setMethodName(methodIdMap.get(m.methodId));
-                sortData.addStackValue(m.useTime);
-                cacheMethodMap.put(m.methodId, sortData);
+                sortData.setMethodName(methodIdMap.get(m.methodId()));
+                sortData.addStackValue(m.useTime());
+                cacheMethodMap.put(m.methodId(), sortData);
             } else {
-                sortData.addStackValue(m.useTime);
+                sortData.addStackValue(m.useTime());
             }
         }
         threadList.clear();
@@ -244,17 +242,5 @@ public class ProfilerLogAnalysis {
                 }
             }
         }
-    }
-
-    /**
-     * 方法栈
-     *
-     * @author shutong.dy
-     * @since 2012-1-11
-     */
-    private class MethodStack {
-        private long methodId;
-        private long useTime;
-        private long stackNum;
     }
 }

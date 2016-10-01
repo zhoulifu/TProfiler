@@ -18,7 +18,8 @@ import com.taobao.profile.runtime.ThreadData;
  * @since 2010-6-23
  */
 public class Profiler {
-    private final static int size = 65535;
+    private final static int DROP_THRESHOLD = 20000;
+    private final static int SIZE = 65535;
     /**
      * 注入类数
      */
@@ -30,7 +31,7 @@ public class Profiler {
     /**
      * 线程数组
      */
-    public static ThreadData[] threadProfile = new ThreadData[size];
+    public static ThreadData[] threadProfile = new ThreadData[SIZE];
 
     /**
      * 方法开始时调用,采集开始时间
@@ -42,16 +43,11 @@ public class Profiler {
             return;
         }
         long threadId = Thread.currentThread().getId();
-        if (threadId >= size) {
+        if (threadId >= SIZE) {
             return;
         }
 
-        long startTime;
-        if (Manager.isNeedNanoTime()) {
-            startTime = System.nanoTime();
-        } else {
-            startTime = System.currentTimeMillis();
-        }
+        long startTime = currentTime();
         try {
             ThreadData thrData = threadProfile[(int) threadId];
             if (thrData == null) {
@@ -59,11 +55,8 @@ public class Profiler {
                 threadProfile[(int) threadId] = thrData;
             }
 
-            long[] frameData = new long[3];
-            frameData[0] = methodId;
-            frameData[1] = thrData.stackNum;
-            frameData[2] = startTime;
-            thrData.stackFrame.push(frameData);
+            thrData.stackFrame.push(
+                    new MethodFrame(methodId, startTime, thrData.stackNum));
             thrData.stackNum++;
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,16 +73,11 @@ public class Profiler {
             return;
         }
         long threadId = Thread.currentThread().getId();
-        if (threadId >= size) {
+        if (threadId >= SIZE) {
             return;
         }
 
-        long endTime;
-        if (Manager.isNeedNanoTime()) {
-            endTime = System.nanoTime();
-        } else {
-            endTime = System.currentTimeMillis();
-        }
+        long endTime = currentTime();
         try {
             ThreadData thrData = threadProfile[(int) threadId];
             if (thrData == null || thrData.stackNum <= 0 ||
@@ -97,31 +85,41 @@ public class Profiler {
                 // 没有执行start,直接执行end/可能是异步停止导致的
                 return;
             }
-            // 栈太深则抛弃部分数据
-            if (thrData.profileData.size() > 20000) {
-                thrData.stackNum--;
-                thrData.stackFrame.pop();
-                return;
-            }
+
             thrData.stackNum--;
-            long[] frameData = thrData.stackFrame.pop();
-            long id = frameData[0];
-            if (methodId != id) {
+            MethodFrame frameData = thrData.stackFrame.pop();
+
+            // Drop frames if stack depth exceeds the threshold. Actually it will drop
+            // frames at the bottom of 'stackFrame'(basically equal to method call
+            // stack) because of doing this check using 'profileData'.
+            if ((thrData.profileData.size() > DROP_THRESHOLD) ||
+                (methodId != frameData.methodId())) {
                 return;
             }
-            long useTime = endTime - frameData[2];
-            if (Manager.isNeedNanoTime()) {
-                if (useTime > 500000) {
-                    frameData[2] = useTime;
-                    thrData.profileData.push(frameData);
-                }
-            } else if (useTime > 1) {
-                frameData[2] = useTime;
+
+            long elapsed = endTime - frameData.useTime();
+            if (elapsedTimeAtLeastOneMillisecond(elapsed)) {
+                frameData.useTime(elapsed);
                 thrData.profileData.push(frameData);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static long currentTime() {
+        return Manager.isNeedNanoTime() ? System.nanoTime() : System.currentTimeMillis();
+    }
+
+    /**
+     * Tell whether the elapsed time is at least one millisecond.(more exactly, time
+     * more than half millisecond)
+     *
+     * @param elapsed
+     * @return
+     */
+    private static boolean elapsedTimeAtLeastOneMillisecond(long elapsed) {
+        return Manager.isNeedNanoTime() ? (elapsed > 500000) : (elapsed >= 1);
     }
 
     public static void clearData() {
