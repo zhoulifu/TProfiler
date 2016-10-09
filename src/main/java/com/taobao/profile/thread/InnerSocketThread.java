@@ -7,118 +7,97 @@
  */
 package com.taobao.profile.thread;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 
 import com.taobao.profile.Manager;
 import com.taobao.profile.runtime.MethodCache;
 
 /**
- * 对外提供Socket开关
- *
- * @author shutong.dy
- * @since 2012-1-11
+ * A thread for handling remote control commands
  */
 public class InnerSocketThread implements Runnable {
-    /**
-     * server
-     */
-    private ServerSocket socket;
-
-    /**
-     * 调试使用
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        InnerSocketThread socketThread = new InnerSocketThread();
-        Thread thread = new Thread(socketThread, "TProfiler-InnerSocket-Debug");
-        thread.start();
+    private enum Command {
+        NONE,
+        START, STOP, STATUS, FLUSH_METHOD
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Thread#run()
-     */
+    private static final int DEFAULT_READ_TIMEOUT = 5000;
+    private boolean debug;
+
+    public InnerSocketThread() {
+        this(false);
+    }
+
+    public InnerSocketThread(boolean debug) {
+        this.debug = debug;
+    }
+
     public void run() {
-        try {
-            socket = new ServerSocket(Manager.PORT);
+        int port = debug ? 8080 : Manager.PORT;
+        try (ServerSocket socket = new ServerSocket(port)) {
             while (true) {
-                Socket child = socket.accept();
+                try (Socket client = socket.accept();
+                     BufferedReader reader = new BufferedReader(
+                             new InputStreamReader(client.getInputStream()))
+                ) {
+                    client.setSoTimeout(DEFAULT_READ_TIMEOUT);
+                    String command = reader.readLine();
+                    Command cmd;
+                    try {
+                        cmd = Command.valueOf(command.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        cmd = Command.NONE;
+                    }
 
-                child.setSoTimeout(5000);
-
-                String command = read(child.getInputStream());
-
-                if (Manager.START.equals(command)) {
-                    Manager.instance().setSwitchFlag(true);
-                } else if (Manager.STATUS.equals(command)) {
-                    write(child.getOutputStream());
-                } else if (Manager.FLUSH_METHOD.equals(command)) {
-                    MethodCache.flushMethodData();
-                } else {
-                    Manager.instance().setSwitchFlag(false);
-                }
-                child.close();
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
+                    switch (cmd) {
+                        case START:
+                            Manager.instance().setSwitchFlag(true);
+                            break;
+                        case STOP:
+                            Manager.instance().setSwitchFlag(false);
+                            break;
+                        case STATUS:
+                            flushRunningStatus(client.getOutputStream());
+                            break;
+                        case FLUSH_METHOD:
+                            MethodCache.flushMethodData();
+                            break;
+                        default:
+                            break;//ignore
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     /**
-     * 读取输入流
-     *
-     * @param in
-     * @return
+     * Write current TProfiler status to the {@code OutputStream}
+     * @param os the specified outputStream
      * @throws IOException
      */
-    private String read(InputStream in) throws IOException {
-        BufferedInputStream bin = new BufferedInputStream(in);
-        StringBuilder sb = new StringBuilder();
-        int i;
-        while ((i = bin.read()) != -1) {
-            char c = (char) i;
-            if (c == '\r') {
-                break;
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
-     * 输出状态
-     *
-     * @param os
-     * @throws IOException
-     */
-    private void write(OutputStream os) throws IOException {
+    private void flushRunningStatus(OutputStream os) throws IOException {
         BufferedOutputStream out = new BufferedOutputStream(os);
-        if (Manager.instance().getSwitchFlag()) {
-            out.write("running".getBytes());
-        } else {
-            out.write("stop".getBytes());
-        }
+        out.write(
+                (Manager.instance().getSwitchFlag() ? "running" : "stopped").getBytes());
         out.write('\r');
         out.flush();
+    }
+
+    /**
+     * Main for debugging
+     */
+    public static void main(String[] args) {
+        Thread thread = new Thread(new InnerSocketThread(true), "TProfiler-InnerSocket-Debug");
+        thread.start();
     }
 }

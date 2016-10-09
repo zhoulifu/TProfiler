@@ -26,23 +26,6 @@ import com.taobao.profile.thread.TimeControlThread;
  * @since 2012-1-9
  */
 public class Manager {
-
-    /**
-     * 开始命令
-     */
-    public static final String START = "start";
-    /**
-     * 结束命令
-     */
-    public static final String STOP = "stop";
-    /**
-     * 获取状态命令
-     */
-    public static final String STATUS = "status";
-    /**
-     * 远程刷出方法数据
-     */
-    public static final String FLUSH_METHOD = "flushmethod";
     /**
      * 远程连接端口
      */
@@ -81,23 +64,6 @@ public class Manager {
      * profile标记.是否可以profile. default:false 不可以profile
      */
     private volatile boolean profileFlag = false;
-
-    /**
-     * 开始时间结束时间控制线程
-     */
-    private TimeControlThread controlThread;
-    /**
-     * 对外提供Socket开关
-     */
-    private InnerSocketThread socketThread;
-    /**
-     * 将性能分析数据写出到磁盘
-     */
-    private DataDumpThread dumpThread;
-    /**
-     * 采样线程
-     */
-    private SamplerThread samplerThread;
     /**
      * 启动时间是否大于采集结束时间
      */
@@ -161,6 +127,7 @@ public class Manager {
 
     /**
      * 判断当前是否可以采集数据
+     *
      * @return
      */
     public boolean canProfile() {
@@ -206,6 +173,7 @@ public class Manager {
 
     /**
      * 启动时间是否大于profile结束时间
+     *
      * @return
      */
     public boolean isMoreThanEndTime() {
@@ -221,7 +189,6 @@ public class Manager {
 
     /**
      * 设置包名过滤器
-     *
      */
     private void setProfFilter() {
         String classLoader = profConfig.getExcludeClassLoader();
@@ -249,7 +216,6 @@ public class Manager {
 
     /**
      * 启动内部线程
-     *
      */
     public void startupThread() {
         factory.newThread(new TimeControlThread(profConfig)).start();
@@ -260,6 +226,7 @@ public class Manager {
 
     private ThreadFactory factory = new ThreadFactory() {
         private final String group = "TProfiler";
+
         @Override
         public Thread newThread(Runnable r) {
             String threadName = r.getClass().getSimpleName();
