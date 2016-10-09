@@ -112,26 +112,22 @@ public class TimeControlThread implements Runnable {
      * @param time
      * @return
      */
-    public InnerControlTime parse(String time) {
+    private InnerControlTime parse(String time) {
         if (time == null) {
             return null;
-        } else {
-            time = time.trim();
-            String[] _time = time.split(":");
-            if (_time.length == 3) {
-                try {
-                    int hour = Integer.valueOf(_time[0]);
-                    int minute = Integer.valueOf(_time[1]);
-                    int second = Integer.valueOf(_time[2]);
-                    InnerControlTime inner = new InnerControlTime();
-                    inner.setHour(hour);
-                    inner.setMinute(minute);
-                    inner.setSecond(second);
-                    return inner;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+        }
+
+        String[] split = time.trim().split(":");
+        if (split.length != 3) {
+            return null;
+        }
+
+        try {
+            return new InnerControlTime(
+                    Integer.valueOf(split[0]), Integer.valueOf(split[1]),
+                    Integer.valueOf(split[2]));
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -147,27 +143,33 @@ public class TimeControlThread implements Runnable {
         private int minute;
         private int second;
 
-        public int getHour() {
+        InnerControlTime(int hour, int minute, int second) {
+            this.hour = hour;
+            this.minute = minute;
+            this.second = second;
+        }
+
+        int getHour() {
             return hour;
         }
 
-        public void setHour(int hour) {
+        void setHour(int hour) {
             this.hour = hour;
         }
 
-        public int getMinute() {
+        int getMinute() {
             return minute;
         }
 
-        public void setMinute(int minute) {
+        void setMinute(int minute) {
             this.minute = minute;
         }
 
-        public int getSecond() {
+        int getSecond() {
             return second;
         }
 
-        public void setSecond(int second) {
+        void setSecond(int second) {
             this.second = second;
         }
     }
