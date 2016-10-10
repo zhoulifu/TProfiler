@@ -10,3 +10,5 @@ pkg/TProfiler/profile.properties
 
 .idea
 *.iml
+
+dist
