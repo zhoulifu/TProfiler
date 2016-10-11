@@ -14,7 +14,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import com.taobao.profile.Profiler;
 import com.taobao.profile.runtime.MethodCache;
 
 /**
@@ -24,47 +23,26 @@ import com.taobao.profile.runtime.MethodCache;
  * @since 2010-6-23
  */
 public class ProfMethodAdapter extends MethodVisitor {
-    /**
-     * 方法ID
-     */
-    private int mMethodId = 0;
 
-    /**
-     * @param visitor
-     * @param fileName
-     * @param className
-     * @param methodName
-     */
-    public ProfMethodAdapter(MethodVisitor visitor, String fileName, String className,
-            String methodName) {
+    private int methodId;
+
+    public ProfMethodAdapter(MethodVisitor visitor, String className, String methodName) {
         super(ASM5, visitor);
-        mMethodId = MethodCache.Request();
-        MethodCache.UpdateMethodName(mMethodId, fileName, className, methodName);
-        // 记录方法数
-        Profiler.instrumentMethodCount.getAndIncrement();
+        methodId = MethodCache.Request(className, methodName);
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodAdapter#visitCode()
-     */
     public void visitCode() {
-        this.visitLdcInsn(mMethodId);
+        this.visitLdcInsn(methodId);
         this.visitMethodInsn(INVOKESTATIC, "com/taobao/profile/Profiler", "Start",
                              "(I)V", false);
         super.visitCode();
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodAdapter#visitLineNumber(int, org.objectweb.asm.Label)
-     */
     public void visitLineNumber(final int line, final Label start) {
-        MethodCache.UpdateLineNum(mMethodId, line);
+        MethodCache.UpdateLineNum(methodId, line);
         super.visitLineNumber(line, start);
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodAdapter#visitInsn(int)
-     */
     public void visitInsn(int inst) {
         switch (inst) {
             case Opcodes.ARETURN:
@@ -74,7 +52,7 @@ public class ProfMethodAdapter extends MethodVisitor {
             case Opcodes.LRETURN:
             case Opcodes.RETURN:
             case Opcodes.ATHROW:
-                this.visitLdcInsn(mMethodId);
+                this.visitLdcInsn(methodId);
                 this.visitMethodInsn(INVOKESTATIC, "com/taobao/profile/Profiler", "End",
                                      "(I)V", false);
                 break;

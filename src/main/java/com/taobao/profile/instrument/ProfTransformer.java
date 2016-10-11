@@ -44,7 +44,7 @@ public class ProfTransformer implements ClassFileTransformer {
         }
 
         // 记录注入类数
-        Profiler.instrumentClassCount.getAndIncrement();
+        Profiler.increaseClassCount();
         try {
             ClassReader reader = new ClassReader(classfileBuffer);
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);

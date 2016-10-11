@@ -16,6 +16,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import com.taobao.profile.Manager;
+import com.taobao.profile.Profiler;
 
 /**
  * ASM类配置器
@@ -28,10 +29,6 @@ public class ProfClassAdapter extends ClassVisitor {
      * 类名
      */
     private String className;
-    /**
-     * 文件名
-     */
-    private String fileName = null;
 
     /**
      * Getter/setter method name cache.
@@ -45,12 +42,6 @@ public class ProfClassAdapter extends ClassVisitor {
     public ProfClassAdapter(ClassVisitor visitor, String className) {
         super(Opcodes.ASM5, visitor);
         this.className = className;
-    }
-
-    @Override
-    public void visitSource(final String source, final String debug) {
-        super.visitSource(source, debug);
-        fileName = source;
     }
 
     @Override
@@ -78,6 +69,7 @@ public class ProfClassAdapter extends ClassVisitor {
             return mv;
         }
 
-        return new ProfMethodAdapter(mv, fileName, className, name);
+        Profiler.increaseMethodCount();
+        return new ProfMethodAdapter(mv, className, name);
     }
 }

@@ -23,15 +23,31 @@ public class Profiler {
     /**
      * 注入类数
      */
-    public static AtomicInteger instrumentClassCount = new AtomicInteger(0);
+    private static AtomicInteger classCounter = new AtomicInteger(0);
     /**
      * 注入方法数
      */
-    public static AtomicInteger instrumentMethodCount = new AtomicInteger(0);
+    private static AtomicInteger methodCounter = new AtomicInteger(0);
     /**
      * 线程数组
      */
     public static ThreadData[] threadProfile = new ThreadData[SIZE];
+
+    public static void increaseMethodCount(){
+        methodCounter.incrementAndGet();
+    }
+
+    public static void increaseClassCount(){
+        classCounter.incrementAndGet();
+    }
+
+    public static int getClassCount() {
+        return classCounter.intValue();
+    }
+
+    public static int getMethodCount() {
+        return methodCounter.intValue();
+    }
 
     /**
      * 方法开始时调用,采集开始时间

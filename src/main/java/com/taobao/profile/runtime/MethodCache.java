@@ -7,96 +7,55 @@
  */
 package com.taobao.profile.runtime;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.taobao.profile.Manager;
 import com.taobao.profile.Profiler;
 import com.taobao.profile.utils.DailyRollingFileWriter;
 
-/**
- * 方法名缓存,用ID代替方法名进行剖析,提升性能
- *
- * @author luqi
- * @since 2010-6-23
- */
 public class MethodCache {
-
-    /**
-     * 方法缓存默认大小
-     */
     private static final int INIT_CACHE_SIZE = 10240;
-    /**
-     * 方法名缓存
-     */
-    private static Vector<MethodInfo> mCacheMethods = new Vector<MethodInfo>(
-            INIT_CACHE_SIZE);
-
-    /**
-     * 方法名writer
-     */
+    private static List<MethodInfo> methodInfoCache = new ArrayList<>(INIT_CACHE_SIZE);
     private static DailyRollingFileWriter fileWriter = new DailyRollingFileWriter(
             Manager.METHOD_LOG_PATH);
 
     /**
-     * 占位并生成方法ID
+     * Request a slot to cache the method information and return its id.
      *
-     * @return
+     * @return method's id
      */
-    public synchronized static int Request() {
-        mCacheMethods.add(new MethodInfo());
-        return mCacheMethods.size() - 1;
+    public synchronized static int Request(String className, String methodName) {
+        methodInfoCache.add(new MethodInfo(className, methodName));
+        return methodInfoCache.size() - 1;
     }
 
     /**
-     * 更新行号
-     *
-     * @param id
-     * @param lineNum
+     * @param id method id
+     * @param lineNum line number
      */
-    public synchronized static void UpdateLineNum(int id, int lineNum) {
-        mCacheMethods.get(id).setMLineNum(lineNum);
+    public static void UpdateLineNum(int id, int lineNum) {
+        methodInfoCache.get(id).setLineNum(lineNum);
     }
 
-    /**
-     * 更新类名方法名
-     *
-     * @param id
-     * @param fileName
-     * @param className
-     * @param methodName
-     */
-    public synchronized static void UpdateMethodName(int id, String fileName,
-            String className, String methodName) {
-        MethodInfo methodInfo = mCacheMethods.get(id);
-        methodInfo.setMFileName(fileName);
-        methodInfo.setMClassName(className);
-        methodInfo.setMMethodName(methodName);
-    }
-
-    /**
-     * 写出方法信息
-     */
     public synchronized static void flushMethodData() {
-        fileWriter.append("instrumentclass:");
-        fileWriter.append(Profiler.instrumentClassCount.toString());
-        fileWriter.append(" instrumentmethod:");
-        fileWriter.append(Profiler.instrumentMethodCount.toString());
-        fileWriter.append("\n");
+        String header = "instrument_class_count:" + Profiler.getClassCount() +
+                        " instrument_method_count:" + Profiler.getMethodCount() + "\n";
+        fileWriter.append(header);
 
-        Vector<MethodInfo> vector = mCacheMethods;
-        int size = vector.size();
+        List<MethodInfo> methods = methodInfoCache;
+        int index = 0;
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < size; i++) {
-            sb.append(i);
-            sb.append(' ');
-            sb.append(vector.get(i).toString());
-            sb.append('\n');
+        for (MethodInfo method : methods) {
+            sb.append(index).append(' ').append(method.toString()).append('\n');
             fileWriter.append(sb.toString());
             sb.setLength(0);
-            if ((i % 50) == 0) {
+            if ((index & 63) == 0) {
                 fileWriter.flushAppend();
             }
+            index++;
         }
+
         fileWriter.flushAppend();
     }
 }
