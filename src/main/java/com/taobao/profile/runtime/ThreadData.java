@@ -19,11 +19,11 @@ public class ThreadData {
     /**
      * 性能分析数据
      */
-    public ProfStack<MethodFrame> profileData = new ProfStack<MethodFrame>();
+    public ProfStack<MethodFrame> profileData = new ProfStack<>();
     /**
      * 栈帧
      */
-    public ProfStack<MethodFrame> stackFrame = new ProfStack<MethodFrame>();
+    public ProfStack<MethodFrame> stackFrame = new ProfStack<>();
     /**
      * 当前栈深度
      */

@@ -121,7 +121,7 @@ public class ProfConfig {
         //此时配置文件中的debug参数还未读取，因此使用-Dtprofiler.debug=true来读取，用于开发时调试
         boolean debug = "true".equalsIgnoreCase(System.getProperty("tprofiler.debug"));
       /*
-	   * 查找顺序：
+       * 查找顺序：
 	   * 1. 系统参数-Dprofile.properties=/path/profile.properties
 	   * 2. 当前文件夹下的profile.properties
 	   * 3. 用户文件夹~/.tprofiler/profile.properties，如：/home/manlge/.tprofiler/profile
@@ -162,6 +162,7 @@ public class ProfConfig {
 
     /**
      * 解压默认的配置文件到~/.tprofiler/profile.properties，作为模板，以便用户编辑
+     *
      * @throws IOException
      */
     private void extractDefaultProfile() throws IOException {
@@ -170,27 +171,25 @@ public class ProfConfig {
 	   * 1. 性能，stream直接复制快，没有properties解析过程(不过文件较小，解析开销可以忽略)
 	   * 2. properties会造成注释丢失，该文件作为模板提供给用户，包含注释信息
 	   */
-        InputStream in = new BufferedInputStream(
+        File profileDirectory = DEFAULT_PROFILE_PATH.getParentFile();
+        if (!profileDirectory.exists()) {
+            profileDirectory.mkdirs();
+        }
+        try (InputStream in = new BufferedInputStream(
                 getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME));
-        OutputStream out = null;
-        try {
-            File profileDirectory = DEFAULT_PROFILE_PATH.getParentFile();
-            if (!profileDirectory.exists()) {
-                profileDirectory.mkdirs();
-            }
-            out = new BufferedOutputStream(new FileOutputStream(DEFAULT_PROFILE_PATH));
+             OutputStream out = new BufferedOutputStream(
+                     new FileOutputStream(DEFAULT_PROFILE_PATH))) {
             byte[] buffer = new byte[1024];
-            for (int len = -1; (len = in.read(buffer)) != -1; ) {
+            int len;
+            while ((len = in.read(buffer)) != -1) {
                 out.write(buffer, 0, len);
             }
-        } finally {
-            in.close();
-            out.close();
         }
     }
 
     /**
      * 解析用户自定义配置文件
+     *
      * @param path
      */
     private void parseProperty(File path) {
@@ -212,6 +211,7 @@ public class ProfConfig {
 
     /**
      * 加载配置
+     *
      * @param properties
      */
     private void loadConfig(Properties properties) throws VariableNotFoundException {
@@ -312,8 +312,7 @@ public class ProfConfig {
     }
 
     /**
-     * @param methodFilePath
-     *            the methodFilePath to set
+     * @param methodFilePath the methodFilePath to set
      */
     public void setMethodFilePath(String methodFilePath) {
         this.methodFilePath = methodFilePath;
@@ -411,8 +410,7 @@ public class ProfConfig {
     }
 
     /**
-     * @param samplerFilePath
-     *            the samplerFilePath to set
+     * @param samplerFilePath the samplerFilePath to set
      */
     public void setSamplerFilePath(String samplerFilePath) {
         this.samplerFilePath = samplerFilePath;
@@ -426,8 +424,7 @@ public class ProfConfig {
     }
 
     /**
-     * @param samplerIntervalTime
-     *            the samplerIntervalTime to set
+     * @param samplerIntervalTime the samplerIntervalTime to set
      */
     public void setSamplerIntervalTime(int samplerIntervalTime) {
         this.samplerIntervalTime = samplerIntervalTime;

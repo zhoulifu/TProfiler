@@ -33,7 +33,7 @@ public class ProfClassAdapter extends ClassVisitor {
     /**
      * Getter/setter method name cache.
      */
-    private List<String> pojoMethodNames = new ArrayList<String>();
+    private List<String> pojoMethodNames = new ArrayList<>();
 
     /**
      * @param visitor

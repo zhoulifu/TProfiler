@@ -139,11 +139,11 @@ public class Profiler {
     }
 
     public static void clearData() {
-        for (int index = 0; index < threadProfile.length; index++) {
-            ThreadData profilerData = threadProfile[index];
+        for (ThreadData profilerData : threadProfile) {
             if (profilerData == null) {
                 continue;
             }
+
             profilerData.clear();
         }
     }

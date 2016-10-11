@@ -122,7 +122,7 @@ public class ProfFilter {
 
         Node createChildByName(String name) {
             if (childrenList == null) {
-                childrenList = new CopyOnWriteArrayList<Node>();
+                childrenList = new CopyOnWriteArrayList<>();
             }
 
             Node child = new Node(name, this);

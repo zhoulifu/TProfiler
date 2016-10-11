@@ -83,20 +83,6 @@ public class DailyRollingFileWriter {
     }
 
     /**
-     * @param head
-     */
-    public void setLogHeadContent(String head) {
-        logHeadContent = head;
-    }
-
-    /**
-     *
-     */
-    public void printLogHeadContent() {
-        doAppend(logHeadContent);
-    }
-
-    /**
      * @param log
      */
     public void append(String log) {

@@ -28,11 +28,11 @@ import java.util.Map;
 public class SamplerLogAnalysis {
 
     private String logPath;
-    private Map<String, Integer> originalMethodMap = new HashMap<String, Integer>();
-    private List<MethodCount> methodList = new ArrayList<MethodCount>();
+    private Map<String, Integer> originalMethodMap = new HashMap<>();
+    private List<MethodCount> methodList = new ArrayList<>();
 
-    private Map<String, Integer> originalThreadMap = new HashMap<String, Integer>();
-    private List<ThreadCount> threadList = new ArrayList<ThreadCount>();
+    private Map<String, Integer> originalThreadMap = new HashMap<>();
+    private List<ThreadCount> threadList = new ArrayList<>();
 
     /**
      * @param inPath
@@ -46,10 +46,9 @@ public class SamplerLogAnalysis {
      */
     public static void main(String[] args) {
         if (args.length != 3) {
-            System.err
-                    .println(
-                            "Usage: <tsampler.log path> <samplermethodresult.log path> " +
-                            "<samplerthreadresult.log path>");
+            System.err.println(
+                    "Usage: <tsampler.log path> <samplermethodresult.log path> " +
+                    "<samplerthreadresult.log path>");
             return;
         }
 

@@ -34,9 +34,9 @@ public class ProfilerLogAnalysis {
     private String methodPath;
     private boolean nano = false;
     private long currentThreadId = -1;
-    private List<MethodFrame> threadList = new ArrayList<MethodFrame>();
-    private Map<Long, TimeSortData> cacheMethodMap = new HashMap<Long, TimeSortData>();
-    private Map<Long, String> methodIdMap = new HashMap<Long, String>();
+    private List<MethodFrame> threadList = new ArrayList<>();
+    private Map<Long, TimeSortData> cacheMethodMap = new HashMap<>();
+    private Map<Long, String> methodIdMap = new HashMap<>();
 
     /**
      * @param inPath
@@ -61,18 +61,6 @@ public class ProfilerLogAnalysis {
         ProfilerLogAnalysis analysis = new ProfilerLogAnalysis(args[0], args[1]);
         analysis.reader();
         analysis.printResult(args[2], args[3]);
-    }
-
-    /**
-     * 取出结果,供分析程序调用
-     *
-     * @return
-     */
-    public List<TimeSortData> getTimeSortData() {
-        List<TimeSortData> list = new ArrayList<TimeSortData>();
-        list.addAll(cacheMethodMap.values());
-        Collections.sort(list);
-        return list;
     }
 
     /**
@@ -165,21 +153,21 @@ public class ProfilerLogAnalysis {
                 }
             }
         }
-        for (int i = 0; i < threadList.size(); i++) {
-            MethodFrame m = threadList.get(i);
+
+        for (MethodFrame m : threadList) {
             if (m.useTime() < 0) {
                 break;
             }
+
             TimeSortData sortData = cacheMethodMap.get(m.methodId());
             if (sortData == null) {
-                sortData = new TimeSortData();
-                sortData.setMethodName(methodIdMap.get(m.methodId()));
-                sortData.addStackValue(m.useTime());
+                sortData = new TimeSortData(methodIdMap.get(m.methodId()));
                 cacheMethodMap.put(m.methodId(), sortData);
-            } else {
-                sortData.addStackValue(m.useTime());
             }
+
+            sortData.addStackValue(m.useTime());
         }
+
         threadList.clear();
     }
 
@@ -187,7 +175,7 @@ public class ProfilerLogAnalysis {
      * 输出分析结果
      */
     public void printResult(String topMethodPath, String topObjectPath) {
-        List<TimeSortData> list = new ArrayList<TimeSortData>();
+        List<TimeSortData> list = new ArrayList<>();
         list.addAll(cacheMethodMap.values());
         Collections.sort(list);
 

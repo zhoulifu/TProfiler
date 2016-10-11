@@ -22,55 +22,38 @@ import com.taobao.profile.utils.DailyRollingFileWriter;
  * @since 2012-1-7
  */
 public class SamplerThread implements Runnable {
-
-    /**
-     * log writer
-     */
     private final DailyRollingFileWriter fileWriter;
-    /**
-     *
-     */
     private final int samplerIntervalTime;
 
-    /**
-     * 线程构造器
-     *
-     * @param config
-     */
     public SamplerThread(ProfConfig config) {
         // 读取配置
         fileWriter = new DailyRollingFileWriter(config.getSamplerFilePath());
         samplerIntervalTime = config.getSamplerIntervalTime();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Thread#run()
-     */
     public void run() {
         try {
             while (true) {
                 if (Manager.instance().canDump()) {
                     Date date = new Date();
                     Map<Thread, StackTraceElement[]> map = Thread.getAllStackTraces();
+                    StringBuilder sb = new StringBuilder();
                     for (Map.Entry<Thread, StackTraceElement[]> entry : map.entrySet()) {
                         Thread thread = entry.getKey();
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("Thread\t");
-                        sb.append(thread.getId());
-                        sb.append("\t");
-                        sb.append(thread.getName());
-                        sb.append("\t");
-                        sb.append(thread.getState());
-                        sb.append("\t");
-                        sb.append(date);
-                        sb.append("\n");
+                        sb.append("Thread\t")
+                          .append(thread.getId()).append("\t")
+                          .append(thread.getName()).append("\t")
+                          .append(thread.getState()).append("\t")
+                          .append(date).append("\n");
                         fileWriter.append(sb.toString());
+                        sb.setLength(0);
+
                         for (StackTraceElement element : entry.getValue()) {
-                            fileWriter.append(element.toString());
-                            fileWriter.append("\n");
+                            sb.append(element.toString()).append('\n');
+                            fileWriter.append(sb.toString());
+                            sb.setLength(0);
                         }
+
                         fileWriter.flushAppend();
                     }
                 }

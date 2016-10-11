@@ -37,11 +37,6 @@ public class DataDumpThread implements Runnable {
      */
     private int eachProfIntervalTime;
 
-    /**
-     * 线程构造器
-     *
-     * @param config
-     */
     public DataDumpThread(ProfConfig config) {
         // 读取用户配置
         fileWriter = new DailyRollingFileWriter(config.getLogFilePath());
@@ -49,11 +44,6 @@ public class DataDumpThread implements Runnable {
         eachProfIntervalTime = config.getEachProfIntervalTime();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Thread#run()
-     */
     public void run() {
         try {
             while (true) {
@@ -92,32 +82,28 @@ public class DataDumpThread implements Runnable {
      */
     private void dumpProfileData() {
         ThreadData[] threadData = Profiler.threadProfile;
+        StringBuilder sb = new StringBuilder();
         for (int index = 0; index < threadData.length; index++) {
             ThreadData profilerData = threadData[index];
             if (profilerData == null) {
                 continue;
             }
+
             ProfStack<MethodFrame> profile = profilerData.profileData;
             while (profile.size() > 0) {
                 MethodFrame frame = profile.pop();
-                StringBuilder sb = new StringBuilder();
-                // thread id
-                sb.append(index);
-                sb.append('\t');
-                // stack depth
-                sb.append(frame.depth());
-                sb.append('\t');
-                // method id
-                sb.append(frame.methodId());
-                sb.append('\t');
-                // use time
-                sb.append(frame.useTime());
-                sb.append('\n');
+                sb.append(index).append('\t')
+                  .append(frame.depth()).append('\t')
+                  .append(frame.methodId()).append('\t')
+                  .append(frame.useTime()).append('\n');
                 fileWriter.append(sb.toString());
+                sb.setLength(0);
             }
+
             fileWriter.flushAppend();
             profilerData.clear();
         }
+
         fileWriter.append("=\n");
         fileWriter.flushAppend();
     }
