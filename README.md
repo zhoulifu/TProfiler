@@ -1,11 +1,11 @@
 # TProfiler
-TProfiler is a code profiling tool.
+TProfiler is a code profiling tool.  
 author: [jlusdy](https://github.com/jlusdy) \<shutong.dy@taobao.com\>
 
 ## Note
 TProfiler requires Java7™ VM.
 
-## LICENSE
+## License
 GPL2.0
 
 ## Contribution

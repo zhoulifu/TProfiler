@@ -10,6 +10,7 @@
 
     <properties>
         <java.version>1.7</java.version>
+        <distribution.dir>dist</distribution.dir>
     </properties>
 
     <dependencies>
@@ -78,7 +79,19 @@
                 <version>2.6</version>
                 <configuration>
                     <descriptor>assembly.xml</descriptor>
-                    <outputDirectory>${project.basedir}/dist</outputDirectory>
+                    <outputDirectory>${project.basedir}/${distribution.dir}</outputDirectory>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${distribution.dir}</directory>
+                        </fileset>
+                    </filesets>
                 </configuration>
             </plugin>
         </plugins>
