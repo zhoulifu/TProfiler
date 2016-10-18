@@ -21,15 +21,17 @@ class ConfigureProperties extends Properties {
         this.context = System.getProperties();
     }
 
+    @Override
     public String getProperty(String key) {
         String value = super.getProperty(key);
         if (value == null) {
-            throw new VariableNotFoundException("variable " + key + " not found");
+            throw new VariableNotFoundException("property " + key + " not found");
         }
 
         return parsePlaceHolder(value.trim());
     }
 
+    @Override
     public String getProperty(String key, String defaultValue) {
         try {
             return this.getProperty(key);
@@ -40,29 +42,35 @@ class ConfigureProperties extends Properties {
 
     final String parsePlaceHolder(String source) throws VariableNotFoundException {
         //从后向前查找
-        int p = source.lastIndexOf('}');
-        while (p != -1) {
-            int p1 = source.lastIndexOf("${");
-            if (p1 == -1) {
-                return source;
+        int rbi = source.lastIndexOf("}");
+        if (rbi == -1) {
+            return source;
+        }
+
+        StringBuilder sb = new StringBuilder(source);
+        while (rbi != -1) {
+            int lbi = sb.lastIndexOf("${");
+            if (lbi == -1) {
+                throw new VariableNotFoundException("invalid token " + source);
             }
 
-            String key = source.substring(p1 + 2, p); //skip '${'
+            String key = sb.substring(lbi + 2, rbi); //skip '${'
             String v = super.getProperty(key);
             if (v == null) {
                 v = context.getProperty(key);
             }
 
             if (v == null) {
-                throw new VariableNotFoundException("variable " + key + " not found");
+                throw new VariableNotFoundException(
+                        "parse " + source + " failed, cause variable ${" + key +
+                        "} not found");
             }
 
-            String start = source.substring(0, p1);
-            String end = source.substring(p + 1);
-            source = start + v + end;
-            p = source.lastIndexOf('}');
+            sb.delete(lbi, rbi + 1);
+            sb.insert(lbi, v);
+            rbi = sb.lastIndexOf("}");
         }
 
-        return source.trim();
+        return sb.toString().trim();
     }
 }
