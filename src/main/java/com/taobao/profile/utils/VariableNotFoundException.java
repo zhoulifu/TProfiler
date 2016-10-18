@@ -1,10 +1,7 @@
 package com.taobao.profile.utils;
 
-public class VariableNotFoundException extends Exception {
+public class VariableNotFoundException extends RuntimeException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -1103164294134360436L;
 
     public VariableNotFoundException() {

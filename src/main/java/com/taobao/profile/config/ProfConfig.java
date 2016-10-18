@@ -193,17 +193,10 @@ public class ProfConfig {
      * @param path
      */
     private void parseProperty(File path) {
-        Properties properties = new Properties();
+        Properties properties = new ConfigureProperties();
         try {
-            properties.load(new FileReader(path)); //配置文件原始内容，未进行变量替换
-
-            //变量查找上下文，采用System.properties和配置文件集合
-            Properties context = new Properties();
-            context.putAll(System.getProperties());
-            context.putAll(properties);
-
-            //加载配置
-            loadConfig(new ConfigureProperties(properties, context));
+            properties.load(new FileReader(path));
+            loadConfig(properties);
         } catch (Exception e) {
             e.printStackTrace();
         }
