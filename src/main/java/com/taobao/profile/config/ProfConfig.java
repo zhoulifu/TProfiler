@@ -215,19 +215,19 @@ public class ProfConfig {
         String samplerFilePath = properties.getProperty("samplerFilePath");
         String includePackageStartsWith = properties.getProperty(
                 "includePackageStartsWith");
-        String eachProfUseTime = properties.getProperty("eachProfUseTime");
-        String eachProfIntervalTime = properties.getProperty("eachProfIntervalTime");
-        String samplerIntervalTime = properties.getProperty("samplerIntervalTime");
+        String eachProfUseTime = properties.getProperty("eachProfUseTime", "5");
+        String eachProfIntervalTime = properties.getProperty("eachProfIntervalTime", "50");
+        String samplerIntervalTime = properties.getProperty("samplerIntervalTime", "10");
         String excludePackageStartsWith = properties.getProperty(
                 "excludePackageStartsWith");
-        String needNanoTime = properties.getProperty("needNanoTime");
-        String ignoreGetSetMethod = properties.getProperty("ignoreGetSetMethod");
+        String needNanoTime = properties.getProperty("needNanoTime", "false");
+        String ignoreGetSetMethod = properties.getProperty("ignoreGetSetMethod", "true");
         String excludeClassLoader = properties.getProperty("excludeClassLoader");
-        String debugMode = properties.getProperty("debugMode");
-        String port = properties.getProperty("port");
-        setPort(port == null ? 50000 : Integer.valueOf(port));
-        setDebugMode(
-                "true".equalsIgnoreCase(debugMode == null ? null : debugMode.trim()));
+        String debugMode = properties.getProperty("debugMode", "false");
+        String port = properties.getProperty("port", "50000");
+
+        setPort(Integer.valueOf(port));
+        setDebugMode(Boolean.valueOf(debugMode));
         setExcludeClassLoader(excludeClassLoader);
         setExcludePackageStartsWith(excludePackageStartsWith);
         setEndProfTime(endProfTime);
@@ -236,23 +236,12 @@ public class ProfConfig {
         setMethodFilePath(methodFilePath);
         setSamplerFilePath(samplerFilePath);
         setStartProfTime(startProfTime);
-        setNeedNanoTime("true".equals(needNanoTime));
-        setIgnoreGetSetMethod("true".equals(ignoreGetSetMethod));
-        if (eachProfUseTime == null) {
-            setEachProfUseTime(5);
-        } else {
-            setEachProfUseTime(Integer.valueOf(eachProfUseTime.trim()));
-        }
-        if (eachProfIntervalTime == null) {
-            setEachProfIntervalTime(50);
-        } else {
-            setEachProfIntervalTime(Integer.valueOf(eachProfIntervalTime.trim()));
-        }
-        if (samplerIntervalTime == null) {
-            setSamplerIntervalTime(10);
-        } else {
-            setSamplerIntervalTime(Integer.valueOf(samplerIntervalTime.trim()));
-        }
+        setNeedNanoTime(Boolean.valueOf(needNanoTime));
+        setIgnoreGetSetMethod(Boolean.valueOf(ignoreGetSetMethod));
+
+        setEachProfUseTime(Integer.valueOf(eachProfUseTime));
+        setEachProfIntervalTime(Integer.valueOf(eachProfIntervalTime));
+        setSamplerIntervalTime(Integer.valueOf(samplerIntervalTime));
     }
 
     /**

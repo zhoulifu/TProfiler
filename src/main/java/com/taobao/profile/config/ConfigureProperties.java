@@ -27,7 +27,7 @@ class ConfigureProperties extends Properties {
             throw new VariableNotFoundException("variable " + key + " not found");
         }
 
-        return parsePlaceHolder(value);
+        return parsePlaceHolder(value.trim());
     }
 
     public String getProperty(String key, String defaultValue) {
@@ -63,6 +63,6 @@ class ConfigureProperties extends Properties {
             p = source.lastIndexOf('}');
         }
 
-        return source;
+        return source.trim();
     }
 }
