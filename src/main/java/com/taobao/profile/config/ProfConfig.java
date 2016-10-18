@@ -166,7 +166,7 @@ public class ProfConfig {
      * @throws IOException
      */
     private void extractDefaultProfile() throws IOException {
-	  /*
+      /*
 	   * 这里采用stream进行复制，而不是采用properties.load和save，主要原因为以下2点：
 	   * 1. 性能，stream直接复制快，没有properties解析过程(不过文件较小，解析开销可以忽略)
 	   * 2. properties会造成注释丢失，该文件作为模板提供给用户，包含注释信息
@@ -187,11 +187,6 @@ public class ProfConfig {
         }
     }
 
-    /**
-     * 解析用户自定义配置文件
-     *
-     * @param path
-     */
     private void parseProperty(File path) {
         Properties properties = new ConfigureProperties();
         try {
@@ -202,11 +197,6 @@ public class ProfConfig {
         }
     }
 
-    /**
-     * 加载配置
-     *
-     * @param properties
-     */
     private void loadConfig(Properties properties) throws VariableNotFoundException {
         String startProfTime = properties.getProperty("startProfTime");
         String endProfTime = properties.getProperty("endProfTime");
@@ -244,198 +234,114 @@ public class ProfConfig {
         setSamplerIntervalTime(Integer.valueOf(samplerIntervalTime));
     }
 
-    /**
-     * @return
-     */
     public String getStartProfTime() {
         return startProfTime;
     }
 
-    /**
-     * @param startProfTime
-     */
     public void setStartProfTime(String startProfTime) {
         this.startProfTime = startProfTime;
     }
 
-    /**
-     * @return
-     */
     public String getEndProfTime() {
         return endProfTime;
     }
 
-    /**
-     * @param endProfTime
-     */
     public void setEndProfTime(String endProfTime) {
         this.endProfTime = endProfTime;
     }
 
-    /**
-     * @return
-     */
     public String getLogFilePath() {
         return logFilePath;
     }
 
-    /**
-     * @param logFilePath
-     */
     public void setLogFilePath(String logFilePath) {
         this.logFilePath = logFilePath;
     }
 
-    /**
-     * @return the methodFilePath
-     */
     public String getMethodFilePath() {
         return methodFilePath;
     }
 
-    /**
-     * @param methodFilePath the methodFilePath to set
-     */
     public void setMethodFilePath(String methodFilePath) {
         this.methodFilePath = methodFilePath;
     }
 
-    /**
-     * @return
-     */
     public String getIncludePackageStartsWith() {
         return includePackageStartsWith;
     }
 
-    /**
-     * @param includePackageStartsWith
-     */
     public void setIncludePackageStartsWith(String includePackageStartsWith) {
         this.includePackageStartsWith = includePackageStartsWith;
     }
 
-    /**
-     * @return
-     */
     public int getEachProfUseTime() {
         return eachProfUseTime;
     }
 
-    /**
-     * @param eachProfUseTime
-     */
     public void setEachProfUseTime(int eachProfUseTime) {
         this.eachProfUseTime = eachProfUseTime;
     }
 
-    /**
-     * @return
-     */
     public int getEachProfIntervalTime() {
         return eachProfIntervalTime;
     }
 
-    /**
-     * @param eachProfIntervalTime
-     */
     public void setEachProfIntervalTime(int eachProfIntervalTime) {
         this.eachProfIntervalTime = eachProfIntervalTime;
     }
 
-    /**
-     * @return
-     */
     public String getExcludePackageStartsWith() {
         return excludePackageStartsWith;
     }
 
-    /**
-     * @param excludePackageStartsWith
-     */
     public void setExcludePackageStartsWith(String excludePackageStartsWith) {
         this.excludePackageStartsWith = excludePackageStartsWith;
     }
 
-    /**
-     * @return
-     */
     public boolean isNeedNanoTime() {
         return needNanoTime;
     }
 
-    /**
-     * @param needNanoTime
-     */
     public void setNeedNanoTime(boolean needNanoTime) {
         this.needNanoTime = needNanoTime;
     }
 
-    /**
-     * @return
-     */
     public boolean isIgnoreGetSetMethod() {
         return ignoreGetSetMethod;
     }
 
-    /**
-     * @param ignoreGetSetMethod
-     */
     public void setIgnoreGetSetMethod(boolean ignoreGetSetMethod) {
         this.ignoreGetSetMethod = ignoreGetSetMethod;
     }
 
-    /**
-     * @return the samplerFilePath
-     */
     public String getSamplerFilePath() {
         return samplerFilePath;
     }
 
-    /**
-     * @param samplerFilePath the samplerFilePath to set
-     */
     public void setSamplerFilePath(String samplerFilePath) {
         this.samplerFilePath = samplerFilePath;
     }
 
-    /**
-     * @return the samplerIntervalTime
-     */
     public int getSamplerIntervalTime() {
         return samplerIntervalTime;
     }
 
-    /**
-     * @param samplerIntervalTime the samplerIntervalTime to set
-     */
     public void setSamplerIntervalTime(int samplerIntervalTime) {
         this.samplerIntervalTime = samplerIntervalTime;
     }
 
-    /**
-     * @return the excludeClassLoader
-     */
     public String getExcludeClassLoader() {
         return excludeClassLoader;
     }
 
-    /**
-     * @param excludeClassLoader the excludeClassLoader to set
-     */
     public void setExcludeClassLoader(String excludeClassLoader) {
         this.excludeClassLoader = excludeClassLoader;
     }
 
-    /**
-     * @return the debugMode
-     */
     public boolean isDebugMode() {
         return debugMode;
     }
 
-    /**
-     * @param debugMode the debugMode to set
-     */
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
     }

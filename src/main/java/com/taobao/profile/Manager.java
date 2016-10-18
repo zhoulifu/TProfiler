@@ -73,15 +73,24 @@ public class Manager {
      */
     private boolean isDebugMode;
 
+    private ThreadFactory factory = new ThreadFactory() {
+        private final String group = "TProfiler";
+
+        @Override
+        public Thread newThread(Runnable r) {
+            String threadName = r.getClass().getSimpleName();
+            Thread thread = new Thread(r, group + "-" + threadName);
+            thread.setDaemon(true);
+            return thread;
+        }
+    };
+
     /**
      * 私有构造器
      */
     private Manager() {
     }
 
-    /**
-     * @return
-     */
     public static Manager instance() {
         return manager;
     }
@@ -127,15 +136,13 @@ public class Manager {
 
     /**
      * 判断当前是否可以采集数据
-     *
-     * @return
      */
     public boolean canProfile() {
         return profileFlag;
     }
 
     /**
-     * @return
+     * @return the switchFlag
      */
     public boolean getSwitchFlag() {
         return switchFlag;
@@ -164,8 +171,6 @@ public class Manager {
 
     /**
      * 判断当前是否可以dump数据
-     *
-     * @return
      */
     public boolean canDump() {
         return timeFlag && switchFlag;
@@ -173,8 +178,6 @@ public class Manager {
 
     /**
      * 启动时间是否大于profile结束时间
-     *
-     * @return
      */
     public boolean isMoreThanEndTime() {
         return moreThanEndTime;
@@ -223,16 +226,4 @@ public class Manager {
         factory.newThread(new DataDumpThread(profConfig)).start();
         factory.newThread(new SamplerThread(profConfig)).start();
     }
-
-    private ThreadFactory factory = new ThreadFactory() {
-        private final String group = "TProfiler";
-
-        @Override
-        public Thread newThread(Runnable r) {
-            String threadName = r.getClass().getSimpleName();
-            Thread thread = new Thread(r, group + "-" + threadName);
-            thread.setDaemon(true);
-            return thread;
-        }
-    };
 }

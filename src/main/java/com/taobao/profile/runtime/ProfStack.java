@@ -17,25 +17,13 @@ import java.util.Arrays;
  */
 public class ProfStack<E> {
 
-    /**
-     *
-     */
     protected Object[] elementData;
-    /**
-     *
-     */
     protected int elementCount;
 
-    /**
-     *
-     */
     public ProfStack() {
         elementData = new Object[200];
     }
 
-    /**
-     * @param minCapacity
-     */
     private void ensureCapacityHelper(int minCapacity) {
         int oldCapacity = elementData.length;
         if (minCapacity > oldCapacity) {
@@ -47,19 +35,12 @@ public class ProfStack<E> {
         }
     }
 
-    /**
-     * @param item
-     * @return
-     */
     public E push(E item) {
         ensureCapacityHelper(elementCount + 1);
         elementData[elementCount++] = item;
         return item;
     }
 
-    /**
-     * @return
-     */
     public E pop() {
         E obj;
         obj = peek();
@@ -67,27 +48,18 @@ public class ProfStack<E> {
         return obj;
     }
 
-    /**
-     * @return
-     */
     public E peek() {
         if (elementCount == 0)
             return null;
         return elementAt(elementCount - 1);
     }
 
-    /**
-     *
-     */
     public void clear() {
         for (int i = 0; i < elementCount; i++)
             elementData[i] = null;
         elementCount = 0;
     }
 
-    /**
-     * @param index
-     */
     public void removeElementAt(int index) {
         if (index >= elementCount) {
             throw new ArrayIndexOutOfBoundsException(index + " >= " + elementCount);
@@ -102,10 +74,6 @@ public class ProfStack<E> {
         elementData[elementCount] = null; /* to let gc do its work */
     }
 
-    /**
-     * @param index
-     * @return
-     */
     @SuppressWarnings("unchecked")
     public E elementAt(int index) {
         if (index >= elementCount) {
@@ -115,9 +83,6 @@ public class ProfStack<E> {
         return (E) elementData[index];
     }
 
-    /**
-     * @return
-     */
     public int size() {
         return elementCount;
     }

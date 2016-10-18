@@ -51,7 +51,7 @@ public class ProFilterTest {
     }
 
     @Test
-    public void testSeparator(){
+    public void testSeparator() {
         ClassLoader loader = this.getClass().getClassLoader();
         ProfFilter.addIncludeClass(loader.getClass().getName());
         ProfFilter.addIncludeClass("foo.bar");

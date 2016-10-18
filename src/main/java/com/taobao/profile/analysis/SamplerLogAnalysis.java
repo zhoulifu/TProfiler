@@ -35,15 +35,12 @@ public class SamplerLogAnalysis {
     private List<ThreadCount> threadList = new ArrayList<>();
 
     /**
-     * @param inPath
+     * @param inPath path of 'tsampler.log'
      */
     public SamplerLogAnalysis(String inPath) {
         this.logPath = inPath;
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         if (args.length != 3) {
             System.err.println(
@@ -99,10 +96,8 @@ public class SamplerLogAnalysis {
 
     /**
      * 输出分析结果
-     *
-     * @param outPath
      */
-    public void printMethodResult(String outPath) {
+    private void printMethodResult(String outPath) {
         for (Map.Entry<String, Integer> entry : originalMethodMap.entrySet()) {
             methodList.add(new MethodCount(entry.getValue(), entry.getKey()));
         }
@@ -140,10 +135,8 @@ public class SamplerLogAnalysis {
 
     /**
      * 输出分析结果
-     *
-     * @param outPath
      */
-    public void printThreadResult(String outPath) {
+    private void printThreadResult(String outPath) {
         for (Map.Entry<String, Integer> entry : originalThreadMap.entrySet()) {
             String[] tmp = entry.getKey().split("\t");
             threadList.add(new ThreadCount(entry.getValue(), tmp[1], tmp[2], tmp[3]));

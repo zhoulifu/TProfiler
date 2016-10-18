@@ -77,8 +77,6 @@ public class DataDumpThread implements Runnable {
 
     /**
      * 将profile数据写到log中
-     *
-     * @return
      */
     private void dumpProfileData() {
         ThreadData[] threadData = Profiler.threadProfile;

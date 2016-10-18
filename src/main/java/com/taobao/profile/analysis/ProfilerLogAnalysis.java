@@ -39,17 +39,14 @@ public class ProfilerLogAnalysis {
     private Map<Long, String> methodIdMap = new HashMap<>();
 
     /**
-     * @param inPath
-     * @param methodPath
+     * @param inPath path of 'tprofiler.log'
+     * @param methodPath path of 'tmethod.log'
      */
     public ProfilerLogAnalysis(String inPath, String methodPath) {
         this.logPath = inPath;
         this.methodPath = methodPath;
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         if (args.length != 4) {
             System.err.println(
@@ -121,11 +118,6 @@ public class ProfilerLogAnalysis {
 
     /**
      * 合并数据
-     *
-     * @param threadId
-     * @param stackDepth
-     * @param methodId
-     * @param useTime
      */
     private void merge(long threadId, long stackDepth, long methodId, long useTime) {
         if (currentThreadId != threadId) {
@@ -174,7 +166,7 @@ public class ProfilerLogAnalysis {
     /**
      * 输出分析结果
      */
-    public void printResult(String topMethodPath, String topObjectPath) {
+    private void printResult(String topMethodPath, String topObjectPath) {
         List<TimeSortData> list = new ArrayList<>();
         list.addAll(cacheMethodMap.values());
         Collections.sort(list);

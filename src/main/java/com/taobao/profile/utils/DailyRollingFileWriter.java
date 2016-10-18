@@ -37,12 +37,6 @@ public class DailyRollingFileWriter {
      * BufferedWriter实例
      */
     private BufferedWriter bufferedWriter;
-
-    /**
-     * 日志头
-     */
-    private String logHeadContent = "";
-
     /**
      * 获取下次滚动时间的Calendar
      */
@@ -56,9 +50,6 @@ public class DailyRollingFileWriter {
      */
     private long nextRollingTime = rollingCalendar.getNextRollingMillis(new Date());
 
-    /**
-     * @param filePath
-     */
     public DailyRollingFileWriter(String filePath) {
         fileName = filePath;
         Date now = new Date();
@@ -82,9 +73,6 @@ public class DailyRollingFileWriter {
         }
     }
 
-    /**
-     * @param log
-     */
     public void append(String log) {
         long time = System.currentTimeMillis();
         if (time > nextRollingTime) {
@@ -95,9 +83,6 @@ public class DailyRollingFileWriter {
         doAppend(log);
     }
 
-    /**
-     *
-     */
     public void flushAppend() {
         if (bufferedWriter != null) {
             try {
@@ -108,9 +93,6 @@ public class DailyRollingFileWriter {
         }
     }
 
-    /**
-     * @param log
-     */
     private void doAppend(String log) {
         try {
             bufferedWriter.write(log);
@@ -119,9 +101,6 @@ public class DailyRollingFileWriter {
         }
     }
 
-    /**
-     *
-     */
     public void closeFile() {
         if (bufferedWriter != null) {
             try {
@@ -133,9 +112,6 @@ public class DailyRollingFileWriter {
         }
     }
 
-    /**
-     * @param now
-     */
     private void rolling(Date now) {
         String datedFilename = fileName + sdf.format(now);
         if (rollingFileName.equals(datedFilename)) {
@@ -154,9 +130,9 @@ public class DailyRollingFileWriter {
     }
 
     /**
-     * 可选是否覆盖旧文件
-     * @param filename
-     * @param append
+     * @param filename the filename
+     * @param append boolean if true, then data will be written to the end of the file
+     * rather than the beginning.
      */
     private void createWriter(String filename, boolean append) {
         try {
@@ -169,7 +145,7 @@ public class DailyRollingFileWriter {
 
     /**
      * 直接覆盖旧文件
-     * @param file
+     *
      */
     private void createWriter(File file) {
         try {
@@ -190,21 +166,15 @@ public class DailyRollingFileWriter {
      */
     private class RollingCalendar {
 
-        /**
-         * @param now
-         * @return
-         */
-        public long getNextRollingMillis(Date now) {
+        long getNextRollingMillis(Date now) {
             return getNextRollingDate(now).getTime();
         }
 
         /**
          * 取得下一次滚动时间
          *
-         * @param now
-         * @return
          */
-        private Date getNextRollingDate(Date now) {
+        Date getNextRollingDate(Date now) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(now);
             cal.set(Calendar.HOUR_OF_DAY, 0);

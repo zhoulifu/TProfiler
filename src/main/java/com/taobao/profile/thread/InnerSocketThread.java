@@ -22,11 +22,6 @@ import com.taobao.profile.runtime.MethodCache;
  * A thread for handling remote control commands
  */
 public class InnerSocketThread implements Runnable {
-    private enum Command {
-        NONE,
-        START, STOP, STATUS, FLUSH_METHOD
-    }
-
     private static final int DEFAULT_READ_TIMEOUT = 5000;
     private boolean debug;
 
@@ -36,6 +31,12 @@ public class InnerSocketThread implements Runnable {
 
     public InnerSocketThread(boolean debug) {
         this.debug = debug;
+    }
+
+    public static void main(String[] args) {
+        Thread thread = new Thread(new InnerSocketThread(true),
+                                   "TProfiler-InnerSocket-Debug");
+        thread.start();
     }
 
     public void run() {
@@ -82,6 +83,7 @@ public class InnerSocketThread implements Runnable {
 
     /**
      * Write current TProfiler status to the {@code OutputStream}
+     *
      * @param os the specified outputStream
      * @throws IOException
      */
@@ -93,11 +95,8 @@ public class InnerSocketThread implements Runnable {
         out.flush();
     }
 
-    /**
-     * Main for debugging
-     */
-    public static void main(String[] args) {
-        Thread thread = new Thread(new InnerSocketThread(true), "TProfiler-InnerSocket-Debug");
-        thread.start();
+    private enum Command {
+        NONE,
+        START, STOP, STATUS, FLUSH_METHOD
     }
 }

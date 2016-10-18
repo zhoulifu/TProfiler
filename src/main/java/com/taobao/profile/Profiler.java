@@ -21,6 +21,10 @@ public class Profiler {
     private final static int DROP_THRESHOLD = 20000;
     private final static int SIZE = 65535;
     /**
+     * 线程数组
+     */
+    public static ThreadData[] threadProfile = new ThreadData[SIZE];
+    /**
      * 注入类数
      */
     private static AtomicInteger classCounter = new AtomicInteger(0);
@@ -28,16 +32,12 @@ public class Profiler {
      * 注入方法数
      */
     private static AtomicInteger methodCounter = new AtomicInteger(0);
-    /**
-     * 线程数组
-     */
-    public static ThreadData[] threadProfile = new ThreadData[SIZE];
 
-    public static void increaseMethodCount(){
+    public static void increaseMethodCount() {
         methodCounter.incrementAndGet();
     }
 
-    public static void increaseClassCount(){
+    public static void increaseClassCount() {
         classCounter.incrementAndGet();
     }
 
@@ -52,7 +52,7 @@ public class Profiler {
     /**
      * 方法开始时调用,采集开始时间
      *
-     * @param methodId
+     * @param methodId current method id
      */
     public static void Start(int methodId) {
         if (!Manager.instance().canProfile()) {
@@ -82,7 +82,7 @@ public class Profiler {
     /**
      * 方法退出时调用,采集结束时间
      *
-     * @param methodId
+     * @param methodId current method id
      */
     public static void End(int methodId) {
         if (!Manager.instance().canProfile()) {
@@ -131,8 +131,7 @@ public class Profiler {
      * Tell whether the elapsed time is at least one millisecond.(more exactly, time
      * more than half millisecond)
      *
-     * @param elapsed
-     * @return
+     * @return true if elapsed more than half millisecond
      */
     private static boolean elapsedTimeAtLeastOneMillisecond(long elapsed) {
         return Manager.isNeedNanoTime() ? (elapsed > 500000) : (elapsed >= 1);

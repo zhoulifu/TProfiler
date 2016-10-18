@@ -13,10 +13,9 @@ public class ConfigurePropertiesTest {
     private ConfigureProperties properties;
 
     @Before
-    public void before(){
+    public void before() {
         properties = new ConfigureProperties();
     }
-
 
     @Test
     public void testConfigureProperties() {
@@ -53,7 +52,7 @@ public class ConfigurePropertiesTest {
     }
 
     @Test
-    public void testDefaultValue(){
+    public void testDefaultValue() {
         Assert.assertEquals("default", properties.getProperty("foo", "default"));
 
         properties.setProperty("foo", "${bar}");

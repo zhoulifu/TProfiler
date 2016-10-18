@@ -21,44 +21,30 @@ public class TimeSortData implements Comparable<TimeSortData> {
     private String methodName;
     private Stack<Long> valueStack = new Stack<>();
 
-    public TimeSortData() {}
+    public TimeSortData() {
+    }
 
     public TimeSortData(String methodName) {
         this.methodName = methodName;
     }
 
-    /**
-     * @return the methodName
-     */
     public String getMethodName() {
         return methodName;
     }
 
-    /**
-     * @param methodName the methodName to set
-     */
     public void setMethodName(String methodName) {
         this.methodName = methodName;
     }
 
-    /**
-     * @return the valueStack
-     */
     public Stack<Long> getValueStack() {
         return valueStack;
     }
 
-    /**
-     * @param useTime
-     */
     public void addStackValue(long useTime) {
         valueStack.add(useTime);
         sum += useTime;
     }
 
-    /**
-     * @return the sum
-     */
     public long getSum() {
         return sum;
     }

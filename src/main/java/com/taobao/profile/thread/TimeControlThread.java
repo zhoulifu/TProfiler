@@ -32,11 +32,7 @@ public class TimeControlThread implements Runnable {
         endTime = parse(config.getEndProfTime());
     }
 
-    /**
-     * @param time
-     * @return
-     */
-    public long waitTime(InnerControlTime time) {
+    private long waitTime(InnerControlTime time) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, time.getHour());
         cal.set(Calendar.MINUTE, time.getMinute());
@@ -45,11 +41,7 @@ public class TimeControlThread implements Runnable {
         return startupTime - System.currentTimeMillis();
     }
 
-    /**
-     * @param time
-     * @return
-     */
-    public long nextStartTime(InnerControlTime time) {
+    private long nextStartTime(InnerControlTime time) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.HOUR_OF_DAY, time.getHour());
@@ -59,9 +51,6 @@ public class TimeControlThread implements Runnable {
         return startupTime - System.currentTimeMillis();
     }
 
-    /**
-     * @param time
-     */
     private void await(long time) {
         synchronized (lock) {
             try {
@@ -72,11 +61,6 @@ public class TimeControlThread implements Runnable {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Thread#run()
-     */
     public void run() {
         if (startTime == null || endTime == null) {
             return;
@@ -108,10 +92,6 @@ public class TimeControlThread implements Runnable {
         }
     }
 
-    /**
-     * @param time
-     * @return
-     */
     private InnerControlTime parse(String time) {
         if (time == null) {
             return null;

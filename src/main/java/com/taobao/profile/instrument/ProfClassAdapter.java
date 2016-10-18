@@ -26,19 +26,11 @@ import com.taobao.profile.Profiler;
  */
 public class ProfClassAdapter extends ClassVisitor {
     /**
-     * 类名
-     */
-    private String className;
-
-    /**
      * Getter/setter method name cache.
      */
     private List<String> pojoMethodNames = new ArrayList<>();
+    private String className;
 
-    /**
-     * @param visitor
-     * @param className
-     */
     public ProfClassAdapter(ClassVisitor visitor, String className) {
         super(Opcodes.ASM5, visitor);
         this.className = className;

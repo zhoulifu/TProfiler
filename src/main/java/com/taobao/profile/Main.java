@@ -18,11 +18,6 @@ import com.taobao.profile.instrument.ProfTransformer;
  * @since 2010-6-23
  */
 public class Main {
-
-    /**
-     * @param args
-     * @param inst
-     */
     public static void premain(String args, Instrumentation inst) {
         Manager.instance().initialization();
         inst.addTransformer(new ProfTransformer());
