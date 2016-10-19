@@ -9,60 +9,53 @@ package com.taobao.profile.analysis;
 
 import com.taobao.profile.utils.MathUtils;
 
-/**
- * 可排序数据对象
- *
- * @author shutong.dy
- * @since 2012-1-11
- */
-public class TimeSortData implements Comparable<TimeSortData> {
+class MethodElapsed implements Comparable<MethodElapsed> {
 
     private long totalElapsed;
     private String methodName;
     private int invokedTimes;
 
-    public TimeSortData() {
+    public MethodElapsed() {
     }
 
-    public TimeSortData(String methodName) {
+    MethodElapsed(String methodName) {
         this.methodName = methodName;
     }
 
-    public String getMethodName() {
+    String getMethodName() {
         return methodName;
     }
 
-    public void setMethodName(String methodName) {
+    void setMethodName(String methodName) {
         this.methodName = methodName;
     }
 
-    public long getTotalElapsed() {
+    long getTotalElapsed() {
         return totalElapsed;
     }
 
-    public void setTotalElapsed(long totalElapsed) {
+    void setTotalElapsed(long totalElapsed) {
         this.totalElapsed = totalElapsed;
     }
 
-    public int getInvokedTimes() {
+    int getInvokedTimes() {
         return invokedTimes;
     }
 
-    public void setInvokedTimes(int invokedTimes) {
+    void setInvokedTimes(int invokedTimes) {
         this.invokedTimes = invokedTimes;
     }
 
-    public void addElapsed(long elapsed) {
+    void addElapsed(long elapsed) {
         invokedTimes++;
         totalElapsed += elapsed;
     }
 
-
-    public long getAverageElapsed() {
+    long getAverageElapsed() {
         return MathUtils.divideRoundHalfUp(getTotalElapsed(), getInvokedTimes());
     }
 
-    public int compareTo(TimeSortData o) {
+    public int compareTo(MethodElapsed o) {
         return Long.compare(o.totalElapsed, this.totalElapsed);
     }
 }

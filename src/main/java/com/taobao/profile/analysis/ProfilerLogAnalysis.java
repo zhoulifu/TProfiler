@@ -34,7 +34,7 @@ public class ProfilerLogAnalysis {
     private boolean nano = false;
     private long currentThreadId = -1;
     private List<MethodFrame> threadList = new ArrayList<>();
-    private Map<Long, TimeSortData> cacheMethodMap = new HashMap<>();
+    private Map<Long, MethodElapsed> cacheMethodMap = new HashMap<>();
     private Map<Long, String> methodIdMap = new HashMap<>();
 
     /**
@@ -150,13 +150,13 @@ public class ProfilerLogAnalysis {
                 break;
             }
 
-            TimeSortData sortData = cacheMethodMap.get(m.methodId());
-            if (sortData == null) {
-                sortData = new TimeSortData(methodIdMap.get(m.methodId()));
-                cacheMethodMap.put(m.methodId(), sortData);
+            MethodElapsed data = cacheMethodMap.get(m.methodId());
+            if (data == null) {
+                data = new MethodElapsed(methodIdMap.get(m.methodId()));
+                cacheMethodMap.put(m.methodId(), data);
             }
 
-            sortData.addElapsed(m.useTime());
+            data.addElapsed(m.useTime());
         }
 
         threadList.clear();
@@ -166,7 +166,7 @@ public class ProfilerLogAnalysis {
      * 输出分析结果
      */
     private void printResult(String topMethodPath, String topObjectPath) {
-        List<TimeSortData> list = new ArrayList<>();
+        List<MethodElapsed> list = new ArrayList<>();
         list.addAll(cacheMethodMap.values());
         Collections.sort(list);
 
@@ -175,10 +175,11 @@ public class ProfilerLogAnalysis {
         try {
             topMethodWriter = new BufferedWriter(new FileWriter(topMethodPath));
             topObjectWriter = new BufferedWriter(new FileWriter(topObjectPath));
-            for (TimeSortData data : list) {
+            for (MethodElapsed data : list) {
                 StringBuilder sb = new StringBuilder();
                 if (nano) {
-                    data.setTotalElapsed(MathUtils.divideRoundHalfUp(data.getTotalElapsed(), 1000000));
+                    data.setTotalElapsed(
+                            MathUtils.divideRoundHalfUp(data.getTotalElapsed(), 1000000));
                 }
 
                 sb.append(data.getMethodName());
