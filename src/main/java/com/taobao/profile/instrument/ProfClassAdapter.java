@@ -17,6 +17,7 @@ import org.objectweb.asm.Opcodes;
 
 import com.taobao.profile.Manager;
 import com.taobao.profile.Profiler;
+import com.taobao.profile.utils.StringUtils;
 
 /**
  * ASM类配置器
@@ -39,10 +40,10 @@ public class ProfClassAdapter extends ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature,
             Object value) {
-        String up = name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
-        String getter = "get" + up;
-        String setter = "set" + up;
-        String boolGetter = "is" + up;
+        String upper = StringUtils.upperCaseFirstLetter(name);
+        String getter = "get" + upper;
+        String setter = "set" + upper;
+        String boolGetter = "is" + upper;
         pojoMethodNames.add(getter);
         pojoMethodNames.add(setter);
         pojoMethodNames.add(boolGetter);
