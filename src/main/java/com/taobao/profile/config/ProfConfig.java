@@ -120,14 +120,14 @@ public class ProfConfig {
 
         //此时配置文件中的debug参数还未读取，因此使用-Dtprofiler.debug=true来读取，用于开发时调试
         boolean debug = "true".equalsIgnoreCase(System.getProperty("tprofiler.debug"));
-      /*
-       * 查找顺序：
-	   * 1. 系统参数-Dprofile.properties=/path/profile.properties
-	   * 2. 当前文件夹下的profile.properties
-	   * 3. 用户文件夹~/.tprofiler/profile.properties，如：/home/manlge/.tprofiler/profile
-	   * .properties
-	   * 4. 默认jar包中的profile.properties
-	   */
+        /*
+        查找顺序：
+        1. 系统参数-Dprofile.properties=/path/profile.properties
+        2. 当前文件夹下的profile.properties
+        3. 用户文件夹~/.tprofiler/profile.properties，如：/home/manlge/.tprofiler/profile
+        .properties
+        4. 默认jar包中的profile.properties
+         */
         String specifiedConfigFileName = System.getProperty(CONFIG_FILE_NAME);
         File configFiles[] = {
                 specifiedConfigFileName == null ? null : new File(
@@ -166,11 +166,11 @@ public class ProfConfig {
      * @throws IOException
      */
     private void extractDefaultProfile() throws IOException {
-      /*
-	   * 这里采用stream进行复制，而不是采用properties.load和save，主要原因为以下2点：
-	   * 1. 性能，stream直接复制快，没有properties解析过程(不过文件较小，解析开销可以忽略)
-	   * 2. properties会造成注释丢失，该文件作为模板提供给用户，包含注释信息
-	   */
+        /*
+        这里采用stream进行复制，而不是采用properties.load和save，主要原因为以下2点：
+        1. 性能，stream直接复制快，没有properties解析过程(不过文件较小，解析开销可以忽略)
+        2. properties会造成注释丢失，该文件作为模板提供给用户，包含注释信息
+         */
         File profileDirectory = DEFAULT_PROFILE_PATH.getParentFile();
         if (!profileDirectory.exists()) {
             profileDirectory.mkdirs();

@@ -67,10 +67,10 @@ class ConfigureProperties extends Properties {
             }
 
             sb.delete(lbi, rbi + 1);
-            sb.insert(lbi, v);
+            sb.insert(lbi, v.trim());
             rbi = sb.lastIndexOf("}");
         }
 
-        return sb.toString().trim();
+        return sb.toString();
     }
 }

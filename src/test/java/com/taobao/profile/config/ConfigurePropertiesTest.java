@@ -59,4 +59,13 @@ public class ConfigurePropertiesTest {
 
         Assert.assertEquals("default", properties.getProperty("foo", "default"));
     }
+    
+    @Test
+    public void testValueTrim(){
+        properties.setProperty("foo", "  hello  ");
+        properties.setProperty("bar", "  world  ");
+        properties.setProperty("sayhi", "   ${foo} ${bar}   ");
+        
+        Assert.assertEquals(properties.getProperty("sayhi"), "hello world");
+    }
 }
