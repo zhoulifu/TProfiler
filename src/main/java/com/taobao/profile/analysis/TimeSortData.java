@@ -7,7 +7,7 @@
  */
 package com.taobao.profile.analysis;
 
-import java.util.Stack;
+import com.taobao.profile.utils.MathUtils;
 
 /**
  * 可排序数据对象
@@ -17,9 +17,9 @@ import java.util.Stack;
  */
 public class TimeSortData implements Comparable<TimeSortData> {
 
-    private long sum = 0;
+    private long totalElapsed;
     private String methodName;
-    private Stack<Long> valueStack = new Stack<>();
+    private int invokedTimes;
 
     public TimeSortData() {
     }
@@ -36,20 +36,33 @@ public class TimeSortData implements Comparable<TimeSortData> {
         this.methodName = methodName;
     }
 
-    public Stack<Long> getValueStack() {
-        return valueStack;
+    public long getTotalElapsed() {
+        return totalElapsed;
     }
 
-    public void addStackValue(long useTime) {
-        valueStack.add(useTime);
-        sum += useTime;
+    public void setTotalElapsed(long totalElapsed) {
+        this.totalElapsed = totalElapsed;
     }
 
-    public long getSum() {
-        return sum;
+    public int getInvokedTimes() {
+        return invokedTimes;
+    }
+
+    public void setInvokedTimes(int invokedTimes) {
+        this.invokedTimes = invokedTimes;
+    }
+
+    public void addElapsed(long elapsed) {
+        invokedTimes++;
+        totalElapsed += elapsed;
+    }
+
+
+    public long getAverageElapsed() {
+        return MathUtils.divideRoundHalfUp(getTotalElapsed(), getInvokedTimes());
     }
 
     public int compareTo(TimeSortData o) {
-        return Long.compare(o.sum, this.sum);
+        return Long.compare(o.totalElapsed, this.totalElapsed);
     }
 }

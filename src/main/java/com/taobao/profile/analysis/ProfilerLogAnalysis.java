@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import com.taobao.profile.MethodFrame;
 import com.taobao.profile.utils.MathUtils;
@@ -157,7 +156,7 @@ public class ProfilerLogAnalysis {
                 cacheMethodMap.put(m.methodId(), sortData);
             }
 
-            sortData.addStackValue(m.useTime());
+            sortData.addElapsed(m.useTime());
         }
 
         threadList.clear();
@@ -178,23 +177,17 @@ public class ProfilerLogAnalysis {
             topObjectWriter = new BufferedWriter(new FileWriter(topObjectPath));
             for (TimeSortData data : list) {
                 StringBuilder sb = new StringBuilder();
-                Stack<Long> stack = data.getValueStack();
-
-                long executeNum = stack.size();
-                long allTime;
                 if (nano) {
-                    allTime = MathUtils.div(data.getSum(), 1000000);
-                } else {
-                    allTime = data.getSum();
+                    data.setTotalElapsed(MathUtils.divideRoundHalfUp(data.getTotalElapsed(), 1000000));
                 }
-                long useTime = MathUtils.div(allTime, executeNum);
+
                 sb.append(data.getMethodName());
                 sb.append("\t");
-                sb.append(executeNum);
+                sb.append(data.getInvokedTimes());
                 sb.append("\t");
-                sb.append(useTime);
+                sb.append(data.getAverageElapsed());
                 sb.append("\t");
-                sb.append(allTime);
+                sb.append(data.getTotalElapsed());
                 sb.append("\n");
                 topMethodWriter.write(sb.toString());
                 if (data.getMethodName() != null && data.getMethodName().contains(
