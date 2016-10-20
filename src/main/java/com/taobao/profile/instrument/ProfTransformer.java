@@ -48,7 +48,7 @@ public class ProfTransformer implements ClassFileTransformer {
         try {
             ClassReader reader = new ClassReader(classfileBuffer);
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-            ClassVisitor visitor = new ProfClassAdapter(writer, className);
+            ClassVisitor visitor = new ProfClassVisitor(writer, className);
             reader.accept(visitor, 0);
             // 生成新类字节码
             return writer.toByteArray();

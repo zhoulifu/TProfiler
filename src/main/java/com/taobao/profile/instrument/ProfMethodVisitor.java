@@ -22,11 +22,11 @@ import com.taobao.profile.runtime.MethodCache;
  * @author luqi
  * @since 2010-6-23
  */
-public class ProfMethodAdapter extends MethodVisitor {
+public class ProfMethodVisitor extends MethodVisitor {
 
     private int methodId;
 
-    public ProfMethodAdapter(MethodVisitor visitor, String className, String methodName) {
+    public ProfMethodVisitor(MethodVisitor visitor, String className, String methodName) {
         super(ASM5, visitor);
         methodId = MethodCache.Request(className, methodName);
     }

@@ -14,6 +14,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
 import com.taobao.profile.Manager;
 import com.taobao.profile.Profiler;
@@ -25,14 +26,14 @@ import com.taobao.profile.utils.StringUtils;
  * @author luqi
  * @since 2010-6-23
  */
-public class ProfClassAdapter extends ClassVisitor {
+public class ProfClassVisitor extends ClassVisitor {
     /**
      * Getter/setter method name cache.
      */
     private List<String> pojoMethodNames = new ArrayList<>();
     private String className;
 
-    public ProfClassAdapter(ClassVisitor visitor, String className) {
+    public ProfClassVisitor(ClassVisitor visitor, String className) {
         super(Opcodes.ASM5, visitor);
         this.className = className;
     }
@@ -41,12 +42,11 @@ public class ProfClassAdapter extends ClassVisitor {
     public FieldVisitor visitField(int access, String name, String desc, String signature,
             Object value) {
         String upper = StringUtils.upperCaseFirstLetter(name);
-        String getter = "get" + upper;
+        String getter = (Type.getType(desc) == Type.BOOLEAN_TYPE) ? "is" + upper
+                                                                  : "get" + upper;
         String setter = "set" + upper;
-        String boolGetter = "is" + upper;
         pojoMethodNames.add(getter);
         pojoMethodNames.add(setter);
-        pojoMethodNames.add(boolGetter);
 
         return super.visitField(access, name, desc, signature, value);
     }
@@ -63,6 +63,6 @@ public class ProfClassAdapter extends ClassVisitor {
         }
 
         Profiler.increaseMethodCount();
-        return new ProfMethodAdapter(mv, className, name);
+        return new ProfMethodVisitor(mv, className, name);
     }
 }
